@@ -1,0 +1,148 @@
+<div id="accordion">
+  <!--------------------------------------------------------------------->
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Configuration
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+        <span>Warranty: </span>
+        <select [(ngModel)]="OrderWarranty">
+          <option *ngFor="let c of Warranties" [ngValue]="c">{{c.name}}</option>
+        </select>
+
+        <br />
+        <span>External Battery: </span>
+        <input type="checkbox" [(ngModel)]="NeedBattery" />
+        <select [(ngModel)]="OrderBattery" [hidden]="!NeedBattery">
+          <option *ngFor="let c of Batteries" [ngValue]="c">{{c.name}}</option>
+        </select>
+        <br />
+        <span>Network Card: </span>
+        <input type="checkbox" [(ngModel)]="OrderNetworkCard" />
+        <br />
+
+        <button class="btn btn-primary" data-toggle="collapse" data-target="#collapseTwo"
+                (click)="PurchaseAndBuild()">
+          Continue
+        </button>
+      </div>
+    </div>
+  </div>
+  <!--------------------------------------------------------------------->
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Billing and Shipping Information
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse multi-collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+      <div class="card-body">
+        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 
+      </div>
+    </div>
+  </div>
+  <!--------------------------------------------------------------------->
+  <!--<div class="card">
+    <div class="card-header" id="headingThree">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Collapsible Group Item #3
+        </button>
+      </h5>
+    </div>
+    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+      <div class="card-body">
+        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 
+      </div>
+    </div>
+  </div>-->
+</div>
+
+
+<!--<div class="container">
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-target="#collapse1">Configuration</a>
+        </h4>
+      </div>
+      <div id="collapse1" class="panel-collapse collapse">
+        <div class="panel-body">
+          <span>Warranty: </span>
+          <select [(ngModel)]="OrderWarranty">
+            <option *ngFor="let c of Warranties" [ngValue]="c">{{c.name}}</option>
+          </select>
+
+          <br />
+          <span>External Battery: </span>
+          <input type="checkbox" [(ngModel)]="NeedBattery" />
+          <select [(ngModel)]="OrderBattery" [hidden]="!NeedBattery">
+            <option *ngFor="let c of Batteries" [ngValue]="c">{{c.name}}</option>
+          </select>
+          <br />
+          <span>Network Card: </span>
+          <input type="checkbox" [(ngModel)]="OrderNetworkCard" />
+          <br />
+
+          <button class="btn btn-info" data-toggle="collapse" data-target="#configureItem"
+                  type="button"
+                  (click)="PurchaseAndBuild()">
+            Continue
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>-->
+
+  <!--<span [ngClass]="[PurchaseBuild ? 'checked' : 'unchecked']">Warranty: </span>-->
+
+
+  <!--<br />
+  <br />
+  <input type="text" name="debug" [ngModel]="PurchaseBuild" />-->
+
+
+<!--These should all be on the same page and expand as you click on them to select options.
+Each step should be required to select an option.
+Options are: Warranty packages (None, 2 YR, 3 YR, 5 YR, 10 YR), external battery (Y/N, if Y, 1,2,3 or 4?), network card (Y/N)-->
+<!--<p *ngIf="!Done"><em>Loading...</em></p>
+<p *ngIf="Nothing"><em>Nothing was returned...</em></p>
+
+<table class='table' *ngIf="todoItems">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>IsComplete</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let todoitem of todoItems">
+            <td>{{ todoitem.id }}</td>
+            <td><input type="text" [(ngModel)]="todoitem.name" /></td>
+            <td><input id="isDone" type="checkbox" [(ngModel)]="todoitem.isComplete"/></td>
+        </tr>
+    </tbody>
+
+</table>
+<input type="button" value="Add Item" (click)="Adding=true"/>
+<div *ngIf="Adding">
+    <div>
+        <h3>Add Item</h3>
+        <input type="checkbox" [(ngModel)]="AddedComplete">
+        <input type="text" [(ngModel)]="AddedName" />
+        <input type="submit" value="Add" (click)="addItem($event)">
+        <a (click)="cancelItem()" aria-label="Close">&#10006;</a>
+    </div>
+</div>-->

@@ -1,8 +1,58 @@
-li .glyphicon {
+.wrapper {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+}
+#sidebar {
+  /* don't forget to add all the previously mentioned styles here too */
+  background: #337ab7;
+  /*color: #fff;*/
+  transition: all 0.3s;
+}
+
+  #sidebar .sidebar-header {
+    padding: 20px;
+    background: #6d7fcc;
+  }
+
+  #sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid #47748b;
+  }
+
+  #sidebar ul p {
+    color: #fff;
+    padding: 10px;
+  }
+
+  #sidebar ul li a {
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+  }
+
+    #sidebar ul li a:hover {
+      color: #7386D5;
+      background: #fff;
+    }
+
+  #sidebar ul li.active > a, a[aria-expanded="true"] {
+    color: #fff;
+    background: #6d7fcc;
+  }
+
+ul ul a {
+  font-size: 0.9em !important;
+  padding-left: 30px !important;
+  background: #6d7fcc;
+}
+
+
+/*li .glyphicon {
     margin-right: 10px;
 }
 
-/* Highlighting rules for nav menu items */
+
 li.link-active a,
 li.link-active a:hover,
 li.link-active a:focus {
@@ -10,20 +60,18 @@ li.link-active a:focus {
     color: white;
 }
 
-/* Keep the nav menu independent of scrolling and on top of other items */
+
 .main-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+
+    margin-left:-10px;
     z-index: 1;
 }
 
 @media (min-width: 768px) {
-    /* On small screens, convert the nav menu to a vertical sidebar */
+
     .main-nav {
         height: 100%;
-        width: calc(25% - 20px);
+
     }
     .navbar {
         border-radius: 0px;
@@ -50,10 +98,9 @@ li.link-active a:focus {
         border-radius: 4px;
     }
     .navbar a {
-        /* If a menu item's text is too long, truncate it */
         width: 100%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
-}
+}*/
