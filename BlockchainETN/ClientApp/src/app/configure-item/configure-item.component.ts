@@ -11,11 +11,13 @@ export class ConfigureItemComponent {
   public OrderNetworkCard: boolean = false;
   public PurchaseBuild: boolean = false;
 
+  public ShowReview: boolean = false;
+  
   public ShippingAddress: AddressInfo | null;
   public BillingAddress: AddressInfo | null;
   public CustomerPaymentInfo: PaymentInfo | null;
 
-  public AddedName: string = '';
+  public OrderName: string = '';
   private TheHttp: Http | null;
 
   public OrderWarranty = null;
@@ -33,19 +35,64 @@ export class ConfigureItemComponent {
     { id: 3, name: "3 batteries" },
     { id: 4, name: "4 batteries" }];
 
+  public ExpirationMonth = null;
+  public Months = [
+    { id: 1, name: "January" },
+    { id: 2, name: "February" },
+    { id: 3, name: "March" },
+    { id: 4, name: "April" },
+    { id: 5, name: "May" },
+    { id: 6, name: "June" },
+    { id: 7, name: "July" },
+    { id: 8, name: "August" },
+    { id: 9, name: "September" },
+    { id: 10, name: "October" },
+    { id: 11, name: "November" },
+    { id: 12, name: "December" }
+  ];
+
+  public ExpirationYear = null;
+  public Years = [
+    { id: 2019, name: "2019" },
+    { id: 2020, name: "2020" },
+    { id: 2021, name: "2021" },
+    { id: 2022, name: "2022" },
+    { id: 2023, name: "2023" },
+    { id: 2024, name: "2024" },
+    { id: 2025, name: "2025" },
+    { id: 2026, name: "2026" },
+    { id: 2027, name: "2027" },
+    { id: 2028, name: "2028" },
+    { id: 2029, name: "2029" },
+    { id: 2030, name: "2030" }
+  ];
+
 
   private localhost: string = 'http://localhost:55608/api/todo';//watch for port # changes (project properties & base_url should fix this)
 
   constructor(http: Http, @Inject('BASE_URL') baseUrl: string) {
     this.localhost = baseUrl + 'api/todo';
     this.TheHttp = http;
+    this.ShippingAddress = new AddressInfo();
+    this.BillingAddress = new AddressInfo();
+    this.CustomerPaymentInfo = new PaymentInfo();
 
+    
     //this.GetList();
   }
 
   public PurchaseAndBuild() {
     this.PurchaseBuild = true;
   }
+  
+  public ReviewOrder() {
+    this.ShowReview = true;
+  }
+
+  public ConfirmOrder() {
+    //TODO
+  }
+
 
   public GetList() {
     if (this.TheHttp == null)
@@ -86,20 +133,22 @@ export class ConfigureItemComponent {
 }
 
 export class AddressInfo {
-  constructor(
-    public SendTo: string,
-    public Street: string,
-    public City: string,
-    public StateProvince: string,
-    public Country: string,
-    public ZipPostalCode: string) { };
+  public SendTo: string;
+  public Street: string;
+  public City: string;
+  public StateProvince: string;
+  public Country: string;
+  public ZipPostalCode: string;
+
+  constructor() { };
 }
 
 export class PaymentInfo {
-  constructor(
-    public NameOnCard: string,
-    public CCNumber: string,
-    public Expiration: string,
-    public SecurityCode: string) { };
+  public NameOnCard: string;
+  public CCNumber: string;
+  public ExpirationMonth: string;
+  public ExpirationYear: string;
+  public SecurityCode: string;
+  constructor() {};
 }
 

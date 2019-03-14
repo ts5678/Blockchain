@@ -1,5 +1,5 @@
 <div id="accordion">
-  <!--------------------------------------------------------------------->
+  <!--------------------------Product Configuration------------------------------------------>
   <div class="card">
     <div class="card-header" id="headingOne">
       <h5 class="mb-0">
@@ -11,108 +11,320 @@
 
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
       <div class="card-body">
-        <span>Warranty: </span>
-        <select [(ngModel)]="OrderWarranty">
-          <option *ngFor="let c of Warranties" [ngValue]="c">{{c.name}}</option>
-        </select>
+        <div class="row mb-2">
+          <div class="col-sm-4">
+            <span>Warranty: </span>
 
-        <br />
-        <span>External Battery: </span>
-        <input type="checkbox" [(ngModel)]="NeedBattery" />
-        <select [(ngModel)]="OrderBattery" [hidden]="!NeedBattery">
-          <option *ngFor="let c of Batteries" [ngValue]="c">{{c.name}}</option>
-        </select>
-        <br />
-        <span>Network Card: </span>
-        <input type="checkbox" [(ngModel)]="OrderNetworkCard" />
-        <br />
+            <select [(ngModel)]="OrderWarranty">
+              <option *ngFor="let c of Warranties" [ngValue]="c">{{c.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-4">
+            <span>External Battery: </span>
 
-        <button class="btn btn-primary" data-toggle="collapse" data-target="#collapseTwo"
-                (click)="PurchaseAndBuild()">
-          Continue
-        </button>
+            <input type="checkbox" [(ngModel)]="NeedBattery" />
+            <select [(ngModel)]="OrderBattery" [hidden]="!NeedBattery">
+              <option *ngFor="let c of Batteries" [ngValue]="c">{{c.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-4">
+            <span>Network Card: </span>
+
+            <input type="checkbox" [(ngModel)]="OrderNetworkCard" />
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-2">
+            <h6 class="float-left">Order Total:</h6>
+          </div>
+          <div class="col-sm-2">
+            <h6 style="color:darkred">$100</h6>
+          </div>
+          <br />
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-4">
+            <button class="btn btn-primary float-left" data-toggle="collapse" data-target="#collapseTwo"
+                    (click)="PurchaseAndBuild()">
+              Continue
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  <!--------------------------------------------------------------------->
+  <!--------------------------Payment Information------------------------------------------->
   <div class="card">
     <div class="card-header" id="headingTwo">
       <h5 class="mb-0">
         <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          Billing and Shipping Information
+          Payment Information
         </button>
       </h5>
     </div>
     <div id="collapseTwo" class="collapse multi-collapse" aria-labelledby="headingTwo" data-parent="#accordion">
       <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 
-      </div>
-    </div>
-  </div>
-  <!--------------------------------------------------------------------->
-  <!--<div class="card">
-    <div class="card-header" id="headingThree">
-      <h5 class="mb-0">
-        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-          Collapsible Group Item #3
-        </button>
-      </h5>
-    </div>
-    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-      <div class="card-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 
-      </div>
-    </div>
-  </div>-->
-</div>
+        <div class="row mb-2">
+          <form class="card col-5">
+            <div class="form-row">
 
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="CCNumber">Card Number</label>
+              </div>
+              <input type="text" class="form-control col-sm-9 mb-1" name="CCNumber" id="CCNumber" [(ngModel)]="CustomerPaymentInfo.CCNumber" />
 
-<!--<div class="container">
-  <div class="panel-group">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" data-target="#collapse1">Configuration</a>
-        </h4>
-      </div>
-      <div id="collapse1" class="panel-collapse collapse">
-        <div class="panel-body">
-          <span>Warranty: </span>
-          <select [(ngModel)]="OrderWarranty">
-            <option *ngFor="let c of Warranties" [ngValue]="c">{{c.name}}</option>
-          </select>
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="NameOnCard">Name on Card</label>
+              </div>
+              <input type="text" class="form-control col-sm-9 mb-1" name="NameOnCard" id="NameOnCard" [(ngModel)]="CustomerPaymentInfo.NameOnCard" />
 
-          <br />
-          <span>External Battery: </span>
-          <input type="checkbox" [(ngModel)]="NeedBattery" />
-          <select [(ngModel)]="OrderBattery" [hidden]="!NeedBattery">
-            <option *ngFor="let c of Batteries" [ngValue]="c">{{c.name}}</option>
-          </select>
-          <br />
-          <span>Network Card: </span>
-          <input type="checkbox" [(ngModel)]="OrderNetworkCard" />
-          <br />
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="City2">Expiration Date</label>
+              </div>
+              <select [(ngModel)]="CustomerPaymentInfo.ExpirationMonth" class="form-control col-sm-3 mb-1" name="ExpirationMonth">
+                <option *ngFor="let c of Months" [ngValue]="c">{{c.name}}</option>
+              </select>
+              <div class="col-sm-1"></div>
+              <select [(ngModel)]="CustomerPaymentInfo.ExpirationYear" class="form-control col-sm-3 mb-1" name="ExpirationYear">
+                <option *ngFor="let c of Years" [ngValue]="c">{{c.name}}</option>
+              </select>
+              <div class="col-sm-2"></div>
 
-          <button class="btn btn-info" data-toggle="collapse" data-target="#configureItem"
-                  type="button"
-                  (click)="PurchaseAndBuild()">
-            Continue
-          </button>
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="SecurityCode">Security Code</label>
+              </div>
+              <input type="text" class="form-control col-sm-3 mb-1" name="SecurityCode" id="SecurityCode" [(ngModel)]="CustomerPaymentInfo.SecurityCode" />
 
+            </div>
+          </form>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-4">
+            <button class="btn btn-primary float-left" data-toggle="collapse" data-target="#collapse3"
+                    (click)="PurchaseAndBuild()">
+              Continue
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>-->
+  <!--------------------------Address Info------------------------------------------->
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+          Shipping and Billing Address
+        </button>
+      </h5>
+    </div>
+    <div id="collapse3" class="collapse multi-collapse" aria-labelledby="heading3" data-parent="#accordion">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-7">
+            <div class="float-right">
+              <span>Use Shipping Address </span>
 
-  <!--<span [ngClass]="[PurchaseBuild ? 'checked' : 'unchecked']">Warranty: </span>-->
+              <input type="checkbox" [(ngModel)]="NeedBattery" />
+            </div>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <form class="card col-5">
+            <div class="card-header mb-1" id="headingship">
+              <h5>
+                Shipping
+              </h5>
+            </div>
+            <div class="form-row">
 
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="name">Send To</label>
+              </div>
+              <input type="text" class="form-control col-sm-9 mb-1" name="name" id="name" [(ngModel)]="ShippingAddress.SendTo" />
 
-  <!--<br />
-  <br />
-  <input type="text" name="debug" [ngModel]="PurchaseBuild" />-->
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="Street">Street</label>
+              </div>
+              <input type="text" class="form-control col-sm-9 mb-1" name="Street" id="Street" [(ngModel)]="ShippingAddress.Street" />
 
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="City">City</label>
+              </div>
+              <input type="text" class="form-control col-sm-9 mb-1" name="City" id="City" [(ngModel)]="ShippingAddress.City" />
 
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="State">State/Province</label>
+              </div>
+              <input type="text" class="form-control col-sm-9 mb-1" name="State" id="State" [(ngModel)]="ShippingAddress.StateProvince" />
+
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="Zip">Zip/Postal Code</label>
+              </div>
+              <input type="text" class="form-control col-sm-9 mb-1" name="Zip" id="Zip" [(ngModel)]="ShippingAddress.ZipPostalCode" />
+
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="Country">Country</label>
+              </div>
+              <input type="text" class="form-control col-sm-9 mb-1" name="Country" id="Country" [(ngModel)]="ShippingAddress.Country" />
+
+            </div>
+          </form>
+          <form class="card col-5">
+            <div class="card-header mb-1" id="headingship">
+              <h5 class="">
+                Billing
+              </h5>
+            </div>
+            <div class="form-row">
+
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="name2">Send To</label>
+              </div>
+              <input type="text" class="form-control col-sm-9 mb-1" name="name2" id="name2" [(ngModel)]="BillingAddress.SendTo" />
+
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="Street2">Street</label>
+              </div>
+              <input type="text" class="form-control col-sm-9 mb-1" name="Street2" id="Street2" [(ngModel)]="BillingAddress.Street" />
+
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="City2">City</label>
+              </div>
+              <input type="text" class="form-control col-sm-9 mb-1" name="City2" id="City2" [(ngModel)]="BillingAddress.City" />
+
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="State2">State/Province</label>
+              </div>
+              <input type="text" class="form-control col-sm-9 mb-1" name="State2" id="State2" [(ngModel)]="BillingAddress.StateProvince" />
+
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="Zip2">Zip/Postal Code</label>
+              </div>
+              <input type="text" class="form-control col-sm-9 mb-1" name="Zip2" id="Zip2" [(ngModel)]="BillingAddress.ZipPostalCode" />
+
+              <div class="col-sm-3">
+                <label class="col-form-label float-right" for="Country2">Country</label>
+              </div>
+              <input type="text" class="form-control col-sm-9 mb-1" name="Country2" id="Country2" [(ngModel)]="BillingAddress.Country" />
+
+            </div>
+          </form>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <button class="btn btn-primary float-left" (click)="ReviewOrder()" data-toggle="collapse" data-target="#collapse4">
+              Review Order
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--------------------------Review Order------------------------------------------->
+  <div class="card" [hidden]="!ShowReview">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+          Review
+        </button>
+      </h5>
+    </div>
+    <div id="collapse4" class="collapse multi-collapse" aria-labelledby="heading4" data-parent="#accordion">
+      <div class="card-body">
+        <div class="row mb-2">
+          <div class="card col-12">
+            <!--<div class="card-header mb-1">
+              <h6>
+                Address
+              </h6>
+            </div>-->
+            <div class="card-body">
+              <div class="container">
+                <div class="row">
+                  <div class="col-sm-3">
+                    <label class="col-form-label" for="name">Send To</label>
+                    <span>someone blah</span>
+                  </div>
+                  <div class="col-sm-3">
+                    <label class="col-form-label" for="Street">Street</label>
+                    <span>Street blah</span>
+                  </div>
+                  <div class="col-sm-3">
+                    <label class="col-form-label" for="City">City</label>
+                    <span>Street City</span>
+                  </div>
+                  <div class="col-sm-3">
+                    <label class="col-form-label" for="State">State/Province</label>
+                    <span>State</span>
+                  </div>
+                  <div class="col-sm-3">
+                    <label class="col-form-label" for="Zip">Zip/Postal Code</label>
+                    <span>Zip</span>
+                  </div>
+                  <div class="col-sm-3">
+                    <label class="col-form-label" for="Country">Country</label>
+                    <span>Country</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="card col-12">
+            <!--<div class="card-header mb-1">
+              <h6>
+                Review
+              </h6>
+            </div>-->
+            <div class="card-body">
+              <div class="container">
+                <div class="row">
+                  <div class="col-sm-3">
+                    <label class="col-form-label" for="name">Send To</label>
+                    <span>someone blah</span>
+                  </div>
+                  <div class="col-sm-3">
+                    <label class="col-form-label" for="Street">Street</label>
+                    <span>Street blah</span>
+                  </div>
+                  <div class="col-sm-3">
+                    <label class="col-form-label" for="City">City</label>
+                    <span>Street City</span>
+                  </div>
+                  <div class="col-sm-3">
+                    <label class="col-form-label" for="State">State/Province</label>
+                    <span>State</span>
+                  </div>
+                  <div class="col-sm-3">
+                    <label class="col-form-label" for="Zip">Zip/Postal Code</label>
+                    <span>Zip</span>
+                  </div>
+                  <div class="col-sm-3">
+                    <label class="col-form-label" for="Country">Country</label>
+                    <span>Country</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <button class="btn btn-primary float-left" (click)="ConfirmOrder()">
+              Confirm Order
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <!--These should all be on the same page and expand as you click on them to select options.
 Each step should be required to select an option.
 Options are: Warranty packages (None, 2 YR, 3 YR, 5 YR, 10 YR), external battery (Y/N, if Y, 1,2,3 or 4?), network card (Y/N)-->
