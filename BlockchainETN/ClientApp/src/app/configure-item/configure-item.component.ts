@@ -68,7 +68,7 @@ export class ConfigureItemComponent {
   ];
 
 
-  private localhost: string = 'http://localhost:55608/api/todo';//watch for port # changes (project properties & base_url should fix this)
+  private localhost: string = 'http://localhost:55608/api/';//watch for port # changes (project properties & base_url should fix this)
 
   constructor(http: Http, @Inject('BASE_URL') baseUrl: string) {
     this.localhost = baseUrl + 'api/todo';
@@ -95,18 +95,18 @@ export class ConfigureItemComponent {
 
 
   public GetList() {
-    if (this.TheHttp == null)
-      return;
+    //if (this.TheHttp == null)
+    //  return;
 
-    this.TheHttp.get(this.localhost).subscribe(result => {
+    //this.TheHttp.get(this.localhost).subscribe(result => {
 
-      let jsonArray = result.json();
+    //  let jsonArray = result.json();
 
-      for (let i = 0; i < jsonArray.length; i++) {
-        let newItem = jsonArray[i];
-      }
+    //  for (let i = 0; i < jsonArray.length; i++) {
+    //    let newItem = jsonArray[i];
+    //  }
 
-    }, error => console.error(error));
+    //}, error => console.error(error));
   }
 
   public addItem(event: any) {

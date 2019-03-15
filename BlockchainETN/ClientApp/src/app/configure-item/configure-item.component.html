@@ -238,76 +238,55 @@
       <div class="card-body">
         <div class="row mb-2">
           <div class="card col-12">
-            <!--<div class="card-header mb-1">
+            <div class="card-header mb-1">
               <h6>
-                Address
+                Order Summary
               </h6>
-            </div>-->
+            </div>
             <div class="card-body">
               <div class="container">
                 <div class="row">
-                  <div class="col-sm-3">
-                    <label class="col-form-label" for="name">Send To</label>
-                    <span>someone blah</span>
-                  </div>
-                  <div class="col-sm-3">
-                    <label class="col-form-label" for="Street">Street</label>
-                    <span>Street blah</span>
-                  </div>
-                  <div class="col-sm-3">
-                    <label class="col-form-label" for="City">City</label>
-                    <span>Street City</span>
-                  </div>
-                  <div class="col-sm-3">
-                    <label class="col-form-label" for="State">State/Province</label>
-                    <span>State</span>
-                  </div>
-                  <div class="col-sm-3">
-                    <label class="col-form-label" for="Zip">Zip/Postal Code</label>
-                    <span>Zip</span>
-                  </div>
-                  <div class="col-sm-3">
-                    <label class="col-form-label" for="Country">Country</label>
-                    <span>Country</span>
+                  <div class="panel col-sm-6 border">
+                    <div class="col-sm-6">
+                      <label for="confnum">Confirmation Number -</label>
+                      <span name="confnum">AX7890</span>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="warranty">Warranty -</label>
+                      <span name="warranty">{{OrderWarranty.Name}}</span>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="batteries">Batteries -</label>
+                      <span name="batteries">{{OrderBattery.Name}}</span>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="networkcard">Network Card -</label>
+                      <span name="networkcard">{{OrderNetworkCard}}</span>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="cc">Order Total -</label>
+                      <span name="cc">$100</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row mb-2">
-          <div class="card col-12">
-            <!--<div class="card-header mb-1">
-              <h6>
-                Review
-              </h6>
-            </div>-->
-            <div class="card-body">
-              <div class="container">
                 <div class="row">
-                  <div class="col-sm-3">
-                    <label class="col-form-label" for="name">Send To</label>
-                    <span>someone blah</span>
-                  </div>
-                  <div class="col-sm-3">
-                    <label class="col-form-label" for="Street">Street</label>
-                    <span>Street blah</span>
-                  </div>
-                  <div class="col-sm-3">
-                    <label class="col-form-label" for="City">City</label>
-                    <span>Street City</span>
-                  </div>
-                  <div class="col-sm-3">
-                    <label class="col-form-label" for="State">State/Province</label>
-                    <span>State</span>
-                  </div>
-                  <div class="col-sm-3">
-                    <label class="col-form-label" for="Zip">Zip/Postal Code</label>
-                    <span>Zip</span>
-                  </div>
-                  <div class="col-sm-3">
-                    <label class="col-form-label" for="Country">Country</label>
-                    <span>Country</span>
+                  <div class="panel col-sm-6 border">
+                    <div class="col-sm-6">
+                      <label for="cc">Last 4 digits of CC -</label>
+                      <span name="cc">1234</span>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="name">Send To -</label>
+                      <span name="name">Bob Loblaw</span>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="street">Street -</label>
+                      <span name="street">1122 Boogey Woogie Ave</span>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="zip">Zip/Postal Code -</label>
+                      <span name="zip">90210</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -316,7 +295,7 @@
         </div>
         <div class="row">
           <div class="col-sm-4">
-            <button class="btn btn-primary float-left" (click)="ConfirmOrder()">
+            <button class="btn btn-primary float-left" (click)="ConfirmOrder()" style="min-width:125px">
               Confirm Order
             </button>
           </div>
