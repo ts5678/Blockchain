@@ -20,8 +20,8 @@ namespace BlockchainETN.Controllers
             HttpClient client = new HttpClient();
             var url = localhost;
             var retVal = GetAccountBalance();
-
-            return retVal.ToString();
+            retVal.Wait();
+            return retVal.Result.ToString();
         }
 
         static async Task<decimal> GetAccountBalance()
