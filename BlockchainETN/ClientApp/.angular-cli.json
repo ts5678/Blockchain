@@ -19,7 +19,8 @@
       "prefix": "app",
       "styles": [
         "styles.css",
-        "../node_modules/bootstrap/dist/css/bootstrap.min.css"
+        "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+        "../node_modules/@swimlane/ngx-datatable/release/themes/bootstrap.css"
       ],
       "scripts": [
         "../node_modules/popper.js/dist/umd/popper.min.js",

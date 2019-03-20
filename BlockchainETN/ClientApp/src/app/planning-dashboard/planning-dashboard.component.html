@@ -1,0 +1,91 @@
+<ngx-loading [show]="loading"
+             [config]="{ backdropBorderRadius: '3px' }"></ngx-loading>
+<div class='container-fluid'>
+  <div class='row border card'>
+    <div class="card-header">
+      Asset Activity
+      <button class="btn btn-primary" (click)="RunSpinner()">Click to spin</button>
+    </div>
+    <div class="card-body">
+      <div class="col-sm-12">
+        <label for="timespan">Time Range: </label>
+        <select [(ngModel)]="SelectedTimespan" class="mb-1 mt-2" name="timespan">
+          <option *ngFor="let c of Timespans" [ngValue]="c">{{c.name}}</option>
+        </select>
+      </div>
+      <div class="col-sm-12">
+
+
+        <!--<div class="col-sm-3">
+
+  </div>
+  <div class="col-sm-3">
+
+  </div>
+  <div class="col-sm-3">
+
+  </div>
+  <div class="col-sm-3">
+
+  </div>-->
+      </div>
+    </div>
+  </div>
+  <div class='row border card'>
+    <div class="card-header">
+      Details
+    </div>
+    <div class="card-body">
+      <div class="col-sm-12">
+        <ngx-datatable class="bootstrap"
+                       [rows]="rows"
+                       [columns]="columns"
+                       [columnMode]="'force'"
+                       [headerHeight]="50"
+                       [footerHeight]="50"
+                       [rowHeight]="'auto'"
+                       [limit]="10">
+        </ngx-datatable>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+  <!--These should all be on the same page and expand as you click on them to select options.
+  Each step should be required to select an option.
+  Options are: Warranty packages (None, 2 YR, 3 YR, 5 YR, 10 YR), external battery (Y/N, if Y, 1,2,3 or 4?), network card (Y/N)-->
+  <!--<p *ngIf="!Done"><em>Loading...</em></p>
+  <p *ngIf="Nothing"><em>Nothing was returned...</em></p>
+
+  <table class='table' *ngIf="todoItems">
+      <thead>
+          <tr>
+              <th>Id</th>
+              <th>Name</th>
+              <th>IsComplete</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr *ngFor="let todoitem of todoItems">
+              <td>{{ todoitem.id }}</td>
+              <td><input type="text" [(ngModel)]="todoitem.name" /></td>
+              <td><input id="isDone" type="checkbox" [(ngModel)]="todoitem.isComplete"/></td>
+          </tr>
+      </tbody>
+
+  </table>
+  <input type="button" value="Add Item" (click)="Adding=true"/>
+  <div *ngIf="Adding">
+      <div>
+          <h3>Add Item</h3>
+          <input type="checkbox" [(ngModel)]="AddedComplete">
+          <input type="text" [(ngModel)]="AddedName" />
+          <input type="submit" value="Add" (click)="addItem($event)">
+          <a (click)="cancelItem()" aria-label="Close">&#10006;</a>
+      </div>
+  </div>-->
