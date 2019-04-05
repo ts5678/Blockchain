@@ -4,9 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Nethereum.ABI.FunctionEncoding.Attributes;
 using Nethereum.Hex.HexTypes;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts.Managed;
@@ -36,10 +38,10 @@ namespace BlockchainETN.Controllers
             var web3 = new Web3("http://127.0.0.1:7545");
 
             //testing with the ethereum /truffle example from the petshop tutorial
-            var json = JObject.Load(new JsonTextReader(new StreamReader(System.IO.File.OpenRead("Adoption.json"))));
+            var json = JObject.Load(new JsonTextReader(new StreamReader(System.IO.File.OpenRead("C:\\Users\\Terj\\Source\\Repos\\ts5678\\Order-By-Ethereum\\build\\contracts\\OrderSystem.json"))));
             var abi = json["abi"].ToString();
             var bytecode = json["bytecode"].ToString();
-            var ganacheAdoptionContractAddress = json["networks"]["5777"]["address"].ToString();
+            var ganacheOrderSystemContractAddress = json["networks"]["5777"]["address"].ToString();
             //the Below is the output from the Truffle Deployment, which will exist in the Adoption.json
             //Replacing 'Adoption'
             //--------------------
@@ -53,8 +55,8 @@ namespace BlockchainETN.Controllers
             //> value sent: 0 ETH
             //> total cost: 0.00434134 ETH
 
-            var senderAddress = "0xb53a1FcA5bAf097C43B6357109056D3835625bC6";
-            var senderPassword = "99e3ff29ba50a4d89ee760dc3d5f7a2f05fea81ba268d25771d368e19aaa80f9";
+            var senderAddress = "0x5aCFB76c34EB65536fe59Be833647792603b164b";
+            var senderPassword = "4206523e9f645f29d31115266628b6d4c48722c263553f27f1fb1bf37e558c8e";
 
             // Some Balance Queries
             var unlockAccountResult = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, senderPassword, 1200).ConfigureAwait(false);
@@ -64,24 +66,33 @@ namespace BlockchainETN.Controllers
             var gasPrice = await web3.Eth.GasPrice.SendRequestAsync().ConfigureAwait(false);
             Console.WriteLine($"Gas price is {gasPrice.Value} wei");
 
-            //We are going to call the contract from Truffle that we already deployed
-            //you can spin up the page that Truffle uses and click adopt on the dogs,
-            //a list will return of what address adopted the dogs & what dogs are not adopted.
-            var contract = web3.Eth.GetContract(abi, ganacheAdoptionContractAddress);
+            //get the contract we deployed
+            var contract = web3.Eth.GetContract(abi, "0x7AE67E55F2E81B35c9f6DF8d0B85F31D291C4acE");//address taken from 'truffle test'
 
-            //List<string> was a proper return value for the getAdopters function
-            //there is a command line C# code generator that will analyze the classes from solidity and 
-            //generate c# code that will work for that contract
-            var getAdoptersResult = await contract.GetFunction("getAdopters").CallAsync<List<string>>();
+            var getOrdersResult = await contract.GetFunction("getOrders").CallDeserializingToObjectAsync<GetOrdersOutputDTOBase>();
 
 
             //=================================================================
             //creates a BRAND NEW contract, and a fresh instance of the contract
-            // you will not see any adopters like the above, because its brand new
             var receipt = await web3.Eth.DeployContract.SendRequestAndWaitForReceiptAsync(abi, bytecode, senderAddress, new HexBigInteger(900000), null);
             var newContractAddress = receipt.ContractAddress;
 
             return new decimal(1);
         }
+    }
+
+    [FunctionOutput]
+    public class GetOrdersOutputDTOBase : IFunctionOutputDTO
+    {
+        [Parameter("string[]", "", 1)]
+        public virtual List<string> ReturnValue1 { get; set; }
+        [Parameter("uint256[]", "", 2)]
+        public virtual List<BigInteger> ReturnValue2 { get; set; }
+        [Parameter("uint256[]", "", 3)]
+        public virtual List<BigInteger> ReturnValue3 { get; set; }
+        [Parameter("uint256[]", "", 4)]
+        public virtual List<BigInteger> ReturnValue4 { get; set; }
+        [Parameter("string[]", "", 5)]
+        public virtual List<string> ReturnValue5 { get; set; }
     }
 }
