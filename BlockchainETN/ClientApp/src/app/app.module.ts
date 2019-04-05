@@ -13,6 +13,9 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { PlanningDashboardComponent } from './planning-dashboard/planning-dashboard.component';
 import { NgxLoadingModule } from 'ngx-loading';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { NgxMaskModule } from 'ngx-mask';
+
+import { InfoShareService } from './infoshare.service';
 
 @NgModule({
   declarations: [
@@ -30,6 +33,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
     HttpModule,
     NgxLoadingModule.forRoot({}),
     NgxDatatableModule,
+    NgxMaskModule.forRoot(),
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'configure-item', component: ConfigureItemComponent },
@@ -37,7 +41,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
       { path: 'planning-dashboard', component: PlanningDashboardComponent },
     ])
   ],
-  providers: [],
+  providers: [InfoShareService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

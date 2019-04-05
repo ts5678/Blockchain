@@ -9,24 +9,26 @@
         </div>
         <div class="form-row">
 
-          <div class="col-sm-3">
-            <label class="col-form-label float-right" for="name">Customer Name</label>
+          <div class="col-sm-2">
+            <label class="col-form-label float-right" for="name">Name</label>
           </div>
-          <input type="text" class="form-control col-sm-9 mb-1" name="name" id="name" [(ngModel)]="Customer.Name" />
+          <input type="text" class="form-control col-sm-10 mb-1" name="name" id="name" [(ngModel)]="Customer.Name" />
 
-          <div class="col-sm-3">
+          <div class="col-sm-2">
             <label class="col-form-label float-right" for="Phone">Phone</label>
           </div>
-          <input type="text" class="form-control col-sm-9 mb-1" name="Phone" id="Phone" [(ngModel)]="Customer.Phone" />
+          <input type="text" class="form-control col-sm-10 mb-1" name="Phone" id="Phone" [(ngModel)]="Customer.Phone" />
 
-          <div class="col-sm-3">
+          <div class="col-sm-2">
             <label class="col-form-label float-right" for="Email">Email</label>
           </div>
-          <input type="text" class="form-control col-sm-9 mb-1" name="Email" id="Email" [(ngModel)]="Customer.Email" />
+          <input type="text" class="form-control col-sm-10 mb-1" name="Email" id="Email" [(ngModel)]="Customer.Email" />
 
         </div>
       </form>
     </div>
   </div>
 
-<input id="begin" class="btn btn-primary" value="Begin Order" type="button" [routerLink]='["/configure-item"]' />
+<input id="begin" class="btn btn-primary" value="Begin Order" type="button"
+       [routerLink]='["/configure-item"]'
+       (click)="BeginOrder()"/>

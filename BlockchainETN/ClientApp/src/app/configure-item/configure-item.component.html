@@ -42,14 +42,14 @@
             <h6 class="float-left">Order Total:</h6>
           </div>
           <div class="col-sm-2">
-            <h6 style="color:darkred">$100</h6>
+            <h6 style="color:darkred">{{Price | currency:'USD':true:'3.2'}} </h6>
           </div>
           <br />
         </div>
         <div class="row mb-2">
           <div class="col-sm-4">
             <button class="btn btn-primary float-left" data-toggle="collapse" data-target="#collapseTwo"
-                    (click)="PurchaseAndBuild()">
+                    (click)="FinishConfiguration()">
               Continue
             </button>
           </div>
@@ -75,7 +75,8 @@
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="CCNumber">Card Number</label>
               </div>
-              <input type="text" class="form-control col-sm-9 mb-1" name="CCNumber" id="CCNumber" [(ngModel)]="CustomerPaymentInfo.CCNumber" />
+
+              <input type="text" class="form-control col-sm-9 mb-1" name="CCNumber" id="CCNumber" mask='0000 0000 0000 0000' [(ngModel)]="CustomerPaymentInfo.CCNumber" />
 
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="NameOnCard">Name on Card</label>
@@ -86,27 +87,33 @@
                 <label class="col-form-label float-right" for="City2">Expiration Date</label>
               </div>
               <select [(ngModel)]="CustomerPaymentInfo.ExpirationMonth" class="form-control col-sm-3 mb-1" name="ExpirationMonth">
-                <option *ngFor="let c of Months" [ngValue]="c">{{c.name}}</option>
+                <option *ngFor="let c of Months" [ngValue]="c.id">{{c.name}}</option>
               </select>
               <div class="col-sm-1"></div>
               <select [(ngModel)]="CustomerPaymentInfo.ExpirationYear" class="form-control col-sm-3 mb-1" name="ExpirationYear">
-                <option *ngFor="let c of Years" [ngValue]="c">{{c.name}}</option>
+                <option *ngFor="let c of Years" [ngValue]="c.id">{{c.name}}</option>
               </select>
               <div class="col-sm-2"></div>
 
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="SecurityCode">Security Code</label>
               </div>
-              <input type="text" class="form-control col-sm-3 mb-1" name="SecurityCode" id="SecurityCode" [(ngModel)]="CustomerPaymentInfo.SecurityCode" />
-
+              <input type="text" class="form-control col-sm-3 mb-1" name="SecurityCode" id="SecurityCode" mask='000' [(ngModel)]="CustomerPaymentInfo.SecurityCode" />
+              
             </div>
           </form>
         </div>
         <div class="row mb-2">
           <div class="col-sm-4">
             <button class="btn btn-primary float-left" data-toggle="collapse" data-target="#collapse3"
-                    (click)="PurchaseAndBuild()">
+                    (click)="FinishPayment()">
               Continue
+            </button>
+          </div>
+          <div class="col-sm-4">
+            <button class="btn btn-warning float-left"
+                    (click)="FillPayment()" [hidden]="!ShowQuickFill">
+              Quick Fill
             </button>
           </div>
         </div>
@@ -129,7 +136,7 @@
             <div class="float-right">
               <span>Use Shipping Address </span>
 
-              <input type="checkbox" [(ngModel)]="NeedBattery" />
+              <input type="checkbox" [(ngModel)]="UseShippingAddress" (change)="ChangeShippingAddress($event)"/>
             </div>
           </div>
         </div>
@@ -145,32 +152,38 @@
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="name">Send To</label>
               </div>
-              <input type="text" class="form-control col-sm-9 mb-1" name="name" id="name" [(ngModel)]="ShippingAddress.SendTo" />
+              <input type="text" class="form-control col-sm-9 mb-1" name="name" id="name" [(ngModel)]="ShippingAddress.SendTo"
+                     (blur)="onSendToBlur()"/>
 
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="Street">Street</label>
               </div>
-              <input type="text" class="form-control col-sm-9 mb-1" name="Street" id="Street" [(ngModel)]="ShippingAddress.Street" />
+              <input type="text" class="form-control col-sm-9 mb-1" name="Street" id="Street" [(ngModel)]="ShippingAddress.Street"
+                     (blur)="onStreetBlur()"/>
 
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="City">City</label>
               </div>
-              <input type="text" class="form-control col-sm-9 mb-1" name="City" id="City" [(ngModel)]="ShippingAddress.City" />
+              <input type="text" class="form-control col-sm-9 mb-1" name="City" id="City" [(ngModel)]="ShippingAddress.City"
+                     (blur)="onCityBlur()"/>
 
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="State">State/Province</label>
               </div>
-              <input type="text" class="form-control col-sm-9 mb-1" name="State" id="State" [(ngModel)]="ShippingAddress.StateProvince" />
+              <input type="text" class="form-control col-sm-9 mb-1" name="State" id="State" [(ngModel)]="ShippingAddress.StateProvince"
+                     (blur)="onStateBlur()"/>
 
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="Zip">Zip/Postal Code</label>
               </div>
-              <input type="text" class="form-control col-sm-9 mb-1" name="Zip" id="Zip" [(ngModel)]="ShippingAddress.ZipPostalCode" />
+              <input type="text" class="form-control col-sm-9 mb-1" name="Zip" id="Zip" [(ngModel)]="ShippingAddress.ZipPostalCode"
+                     (blur)="onZipBlur()"/>
 
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="Country">Country</label>
               </div>
-              <input type="text" class="form-control col-sm-9 mb-1" name="Country" id="Country" [(ngModel)]="ShippingAddress.Country" />
+              <input type="text" class="form-control col-sm-9 mb-1" name="Country" id="Country" [(ngModel)]="ShippingAddress.Country"
+                     (blur)="onCountryBlur()"/>
 
             </div>
           </form>
@@ -185,32 +198,32 @@
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="name2">Send To</label>
               </div>
-              <input type="text" class="form-control col-sm-9 mb-1" name="name2" id="name2" [(ngModel)]="BillingAddress.SendTo" />
+              <input type="text" class="form-control col-sm-9 mb-1" name="name2" id="name2" [disabled]="UseShippingAddress" [(ngModel)]="BillingAddress.SendTo" />
 
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="Street2">Street</label>
               </div>
-              <input type="text" class="form-control col-sm-9 mb-1" name="Street2" id="Street2" [(ngModel)]="BillingAddress.Street" />
+              <input type="text" class="form-control col-sm-9 mb-1" name="Street2" id="Street2" [disabled]="UseShippingAddress" [(ngModel)]="BillingAddress.Street" />
 
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="City2">City</label>
               </div>
-              <input type="text" class="form-control col-sm-9 mb-1" name="City2" id="City2" [(ngModel)]="BillingAddress.City" />
+              <input type="text" class="form-control col-sm-9 mb-1" name="City2" id="City2" [disabled]="UseShippingAddress" [(ngModel)]="BillingAddress.City" />
 
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="State2">State/Province</label>
               </div>
-              <input type="text" class="form-control col-sm-9 mb-1" name="State2" id="State2" [(ngModel)]="BillingAddress.StateProvince" />
+              <input type="text" class="form-control col-sm-9 mb-1" name="State2" id="State2" [disabled]="UseShippingAddress" [(ngModel)]="BillingAddress.StateProvince" />
 
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="Zip2">Zip/Postal Code</label>
               </div>
-              <input type="text" class="form-control col-sm-9 mb-1" name="Zip2" id="Zip2" [(ngModel)]="BillingAddress.ZipPostalCode" />
+              <input type="text" class="form-control col-sm-9 mb-1" name="Zip2" id="Zip2" [disabled]="UseShippingAddress" [(ngModel)]="BillingAddress.ZipPostalCode" />
 
               <div class="col-sm-3">
                 <label class="col-form-label float-right" for="Country2">Country</label>
               </div>
-              <input type="text" class="form-control col-sm-9 mb-1" name="Country2" id="Country2" [(ngModel)]="BillingAddress.Country" />
+              <input type="text" class="form-control col-sm-9 mb-1" name="Country2" id="Country2" [disabled]="UseShippingAddress" [(ngModel)]="BillingAddress.Country" />
 
             </div>
           </form>
@@ -221,6 +234,13 @@
               Review Order
             </button>
           </div>
+          <div class="col-sm-4">
+            <button class="btn btn-warning float-left"
+                    (click)="FillShippingAddress()" [hidden]="!ShowQuickFill">
+              Quick Fill
+            </button>
+          </div>
+          
         </div>
       </div>
     </div>
@@ -244,46 +264,59 @@
               </h6>
             </div>
             <div class="card-body">
-              <div class="container">
-                <div class="row">
-                  <div class="panel col-sm-6 border">
-                    <div class="col-sm-6">
+              <div class="row">
+                <div class="col-sm-6 border">
+                  <div class="panel col-sm-12">
+                    <div class="col-sm-12">
                       <label for="confnum">Confirmation Number -</label>
                       <span name="confnum">AX7890</span>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-12">
+                      <label for="custname">Customer Name -</label>
+                      <span name="custname">{{infoShareService.Customer.Name}}</span>
+                    </div>
+                    
+                    <div class="col-sm-12">
                       <label for="warranty">Warranty -</label>
                       <span name="warranty">{{OrderWarranty.name}}</span>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-12">
                       <label for="batteries">Batteries -</label>
                       <span name="batteries">{{OrderBattery.name}}</span>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-12">
                       <label for="networkcard">Network Card -</label>
                       <span name="networkcard">{{OrderNetworkCard}}</span>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-12">
                       <label for="cc">Order Total -</label>
                       <span name="cc">$100</span>
                     </div>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="panel col-sm-6 border">
-                    <div class="col-sm-6">
+                <div class="col-sm-6 border">
+                  <div class="panel col-sm-12">
+                    <div class="col-sm-12">
                       <label for="cc">Last 4 digits of CC -</label>
                       <span name="cc">1234</span>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-12">
                       <label for="name">Send To -</label>
                       <span name="name">Bob Loblaw</span>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-12">
                       <label for="street">Street -</label>
                       <span name="street">1122 Boogey Woogie Ave</span>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-12">
+                      <label for="street">City -</label>
+                      <span name="street">Devils Den</span>
+                    </div>
+                    <div class="col-sm-12">
+                      <label for="street">State -</label>
+                      <span name="street">AK</span>
+                    </div>
+                    <div class="col-sm-12">
                       <label for="zip">Zip/Postal Code -</label>
                       <span name="zip">90210</span>
                     </div>
@@ -304,36 +337,3 @@
     </div>
   </div>
 </div>
-<!--These should all be on the same page and expand as you click on them to select options.
-Each step should be required to select an option.
-Options are: Warranty packages (None, 2 YR, 3 YR, 5 YR, 10 YR), external battery (Y/N, if Y, 1,2,3 or 4?), network card (Y/N)-->
-<!--<p *ngIf="!Done"><em>Loading...</em></p>
-<p *ngIf="Nothing"><em>Nothing was returned...</em></p>
-
-<table class='table' *ngIf="todoItems">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>IsComplete</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let todoitem of todoItems">
-            <td>{{ todoitem.id }}</td>
-            <td><input type="text" [(ngModel)]="todoitem.name" /></td>
-            <td><input id="isDone" type="checkbox" [(ngModel)]="todoitem.isComplete"/></td>
-        </tr>
-    </tbody>
-
-</table>
-<input type="button" value="Add Item" (click)="Adding=true"/>
-<div *ngIf="Adding">
-    <div>
-        <h3>Add Item</h3>
-        <input type="checkbox" [(ngModel)]="AddedComplete">
-        <input type="text" [(ngModel)]="AddedName" />
-        <input type="submit" value="Add" (click)="addItem($event)">
-        <a (click)="cancelItem()" aria-label="Close">&#10006;</a>
-    </div>
-</div>-->

@@ -4,6 +4,8 @@ import { NgxLoadingModule } from 'ngx-loading';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { TableColumn, ColumnMode } from '@swimlane/ngx-datatable';
 
+import { TransactionInfo, Guid, OrderStatus } from '../shared-library';
+
 
 @Component({
   selector: 'planning-dashboard',
@@ -75,37 +77,4 @@ export class PlanningDashboardComponent {
 
     setTimeout(() => { this.loading = false; }, 3000);
   }
-}
-
-export class TransactionInfo {
-  public Timestamp: Date;
-  public TransactionID: string;
-  public TransactionType: OrderStatus;
-  public TransactionSubmitter: string;
-
-  //constructor() { };
-  constructor(aTimestamp: Date, aTransactionID: string, aTransactionType: OrderStatus, aTransactionSubmitter: string )
-  {
-    this.Timestamp = aTimestamp;
-    this.TransactionID = aTransactionID;
-    this.TransactionType = aTransactionType;
-    this.TransactionSubmitter = aTransactionSubmitter;
-  };
-}
-
-class Guid {
-  static newGuid() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  }
-}
-
-
-export const enum OrderStatus {
-  OrderReceived = "Order Received",
-  BeingBuilt = "Being Built",
-  PreparingForShipping = "Preparing For Shipping",
-  Complete = "Complete"
 }
