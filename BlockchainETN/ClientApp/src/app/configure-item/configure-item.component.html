@@ -87,11 +87,11 @@
                 <label class="col-form-label float-right" for="City2">Expiration Date</label>
               </div>
               <select [(ngModel)]="CustomerPaymentInfo.ExpirationMonth" class="form-control col-sm-3 mb-1" name="ExpirationMonth">
-                <option *ngFor="let c of Months" [ngValue]="c.id">{{c.name}}</option>
+                <option *ngFor="let c of Months" [ngValue]="c">{{c.name}}</option>
               </select>
               <div class="col-sm-1"></div>
               <select [(ngModel)]="CustomerPaymentInfo.ExpirationYear" class="form-control col-sm-3 mb-1" name="ExpirationYear">
-                <option *ngFor="let c of Years" [ngValue]="c.id">{{c.name}}</option>
+                <option *ngFor="let c of Years" [ngValue]="c">{{c.name}}</option>
               </select>
               <div class="col-sm-2"></div>
 
@@ -112,7 +112,7 @@
           </div>
           <div class="col-sm-4">
             <button class="btn btn-warning float-left"
-                    (click)="FillPayment()" [hidden]="!ShowQuickFill">
+                    (click)="FillPayment()" [hidden]="!infoShareService.ShowQuickFill">
               Quick Fill
             </button>
           </div>
@@ -236,7 +236,7 @@
           </div>
           <div class="col-sm-4">
             <button class="btn btn-warning float-left"
-                    (click)="FillShippingAddress()" [hidden]="!ShowQuickFill">
+                    (click)="FillShippingAddress()" [hidden]="!infoShareService.ShowQuickFill">
               Quick Fill
             </button>
           </div>
@@ -273,24 +273,24 @@
                     </div>
                     <div class="col-sm-12">
                       <label for="custname">Customer Name -</label>
-                      <span name="custname">{{infoShareService.Customer.Name}}</span>
+                      <span name="custname">{{infoShareService?.Customer?.Name}}</span>
                     </div>
                     
                     <div class="col-sm-12">
                       <label for="warranty">Warranty -</label>
-                      <span name="warranty">{{OrderWarranty.name}}</span>
+                      <span name="warranty">{{OrderWarranty?.name}}</span>
                     </div>
                     <div class="col-sm-12">
                       <label for="batteries">Batteries -</label>
-                      <span name="batteries">{{OrderBattery.name}}</span>
+                      <span name="batteries">{{OrderBattery?.name}}</span>
                     </div>
                     <div class="col-sm-12">
                       <label for="networkcard">Network Card -</label>
-                      <span name="networkcard">{{OrderNetworkCard}}</span>
+                      <span name="networkcard">{{OrderNetworkCard == true ? 'Yes' : 'No'}}</span>
                     </div>
                     <div class="col-sm-12">
-                      <label for="cc">Order Total -</label>
-                      <span name="cc">$100</span>
+                      <label for="ot">Order Total -</label>
+                      <span name="ot">{{Price | currency:'USD':true:'3.2'}}</span>
                     </div>
                   </div>
                 </div>
@@ -298,27 +298,27 @@
                   <div class="panel col-sm-12">
                     <div class="col-sm-12">
                       <label for="cc">Last 4 digits of CC -</label>
-                      <span name="cc">1234</span>
+                      <span name="cc">{{CustomerPaymentInfo.CCNumber | slice:-4}}</span>
                     </div>
                     <div class="col-sm-12">
                       <label for="name">Send To -</label>
-                      <span name="name">Bob Loblaw</span>
+                      <span name="name">{{ShippingAddress.SendTo}}</span>
                     </div>
                     <div class="col-sm-12">
                       <label for="street">Street -</label>
-                      <span name="street">1122 Boogey Woogie Ave</span>
+                      <span name="street">{{ShippingAddress.Street}}</span>
                     </div>
                     <div class="col-sm-12">
                       <label for="street">City -</label>
-                      <span name="street">Devils Den</span>
+                      <span name="street">{{ShippingAddress.City}}</span>
                     </div>
                     <div class="col-sm-12">
                       <label for="street">State -</label>
-                      <span name="street">AK</span>
+                      <span name="street">{{ShippingAddress.StateProvince}}</span>
                     </div>
                     <div class="col-sm-12">
                       <label for="zip">Zip/Postal Code -</label>
-                      <span name="zip">90210</span>
+                      <span name="zip">{{ShippingAddress.ZipPostalCode}}</span>
                     </div>
                   </div>
                 </div>

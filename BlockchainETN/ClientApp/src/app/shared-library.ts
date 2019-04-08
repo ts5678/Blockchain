@@ -13,8 +13,8 @@
   export class PaymentInfo {
     public NameOnCard: string;
     public CCNumber: string;
-    public ExpirationMonth: number;
-    public ExpirationYear: number;
+    public ExpirationMonth: { id: number, name: string };
+    public ExpirationYear: { id: number, name: string };
     public SecurityCode: string;
     constructor() { };
   }
@@ -57,5 +57,11 @@
     PreparingForShipping = "Preparing For Shipping",
     Complete = "Complete"
   }
+
+export class RandomNums {
+  static getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+}
 
 

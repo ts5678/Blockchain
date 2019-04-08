@@ -46,4 +46,13 @@ var Guid = /** @class */ (function () {
     return Guid;
 }());
 exports.Guid = Guid;
+var RandomNums = /** @class */ (function () {
+    function RandomNums() {
+    }
+    RandomNums.getRandomInt = function (min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+    return RandomNums;
+}());
+exports.RandomNums = RandomNums;
 //# sourceMappingURL=shared-library.js.map

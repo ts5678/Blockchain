@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { Http, RequestOptions, RequestOptionsArgs } from '@angular/http';
 import { InfoShareService } from '../infoshare.service';
-import { AddressInfo, PaymentInfo, CustomerInfo } from '../shared-library';
+import { AddressInfo, PaymentInfo, CustomerInfo, Guid, RandomNums } from '../shared-library';
 import { NgxMaskModule } from 'ngx-mask';
 
 @Component({
@@ -28,9 +28,6 @@ export class ConfigureItemComponent {
   public Price: number = 1000;
 
   private TheHttp: Http | null;
-
-  public ShowQuickFill: boolean = true;
-
 
   public Warranties: { id: number, name: string }[] = [
     { id: 0, name: "None" },
@@ -86,6 +83,7 @@ export class ConfigureItemComponent {
     this.BillingAddress = new AddressInfo();
     this.CustomerPaymentInfo = new PaymentInfo();
 
+    this.OrderWarranty = this.Warranties.find(x => x.id == 0);
     
     //this.GetList();
   }
@@ -98,17 +96,10 @@ export class ConfigureItemComponent {
   public FillPayment() {
     this.CustomerPaymentInfo.NameOnCard = "Robert Buyer";
     this.CustomerPaymentInfo.CCNumber = "4422676780104242";
-    this.CustomerPaymentInfo.ExpirationMonth = this.Months.find(x => x.id == 3).id;
-    this.CustomerPaymentInfo.ExpirationYear = this.Years.find(x => x.id == 2024).id;
+    this.CustomerPaymentInfo.ExpirationMonth = this.Months.find(x => x.id == 3)
+    this.CustomerPaymentInfo.ExpirationYear = this.Years.find(x => x.id == 2024);
     this.CustomerPaymentInfo.SecurityCode = "555";
   }
-
-  public SendTo: string;
-  public Street: string;
-  public City: string;
-  public StateProvince: string;
-  public Country: string;
-  public ZipPostalCode: string;
 
   public FillShippingAddress(){
     let one = new AddressInfo();
@@ -161,27 +152,15 @@ export class ConfigureItemComponent {
 
     let FakeAddresses: Array<AddressInfo> = [one, two, three, four, five, six];
 
-    let rand1 = this.getRandomInt(0, 5);
-    let rand2 = this.getRandomInt(0, 5);
-    let rand11 = this.getRandomInt(0, 5);
-    let rand21 = this.getRandomInt(0, 5);
-    let rand111 = this.getRandomInt(0, 5);
-    let rand211 = this.getRandomInt(0, 5);
-    let rand1111 = this.getRandomInt(0, 5);
-    let rand11112 = this.getRandomInt(0, 5);
-    let rand12 = this.getRandomInt(0, 5);
-    let rand22 = this.getRandomInt(0, 5);
-    let rand222 = this.getRandomInt(0, 5);
-    let rand2222 = this.getRandomInt(0, 5);
+    let rand1 = RandomNums.getRandomInt(0, 5);
+    let rand2 = RandomNums.getRandomInt(0, 5);
 
     this.BillingAddress = FakeAddresses[rand1];
     this.ShippingAddress = FakeAddresses[rand2];
   
   }
 
-  private getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+
 
 
   public FinishPayment() {

@@ -1,34 +1,43 @@
 
-  <div class="card-body">
-    <div class="row mb-2">
-      <form class="card col-5">
-        <div class="card-header mb-1" id="heading">
-          <h5 class="">
-            Customer Information
-          </h5>
+<div class="card-body">
+  <div class="row mb-2">
+    <form class="card col-5">
+      <div class="card-header mb-1" id="heading">
+        <h5 class="">
+          Customer Information
+        </h5>
+      </div>
+      <div class="form-row">
+
+        <div class="col-sm-2">
+          <label class="col-form-label float-right" for="name">Name</label>
         </div>
-        <div class="form-row">
+        <input type="text" class="form-control col-sm-10 mb-1" name="name" id="name" [(ngModel)]="Customer.Name" />
 
-          <div class="col-sm-2">
-            <label class="col-form-label float-right" for="name">Name</label>
-          </div>
-          <input type="text" class="form-control col-sm-10 mb-1" name="name" id="name" [(ngModel)]="Customer.Name" />
-
-          <div class="col-sm-2">
-            <label class="col-form-label float-right" for="Phone">Phone</label>
-          </div>
-          <input type="text" class="form-control col-sm-10 mb-1" name="Phone" id="Phone" [(ngModel)]="Customer.Phone" />
-
-          <div class="col-sm-2">
-            <label class="col-form-label float-right" for="Email">Email</label>
-          </div>
-          <input type="text" class="form-control col-sm-10 mb-1" name="Email" id="Email" [(ngModel)]="Customer.Email" />
-
+        <div class="col-sm-2">
+          <label class="col-form-label float-right" for="Phone">Phone</label>
         </div>
-      </form>
-    </div>
+        <input type="text" class="form-control col-sm-10 mb-1" name="Phone" id="Phone" [(ngModel)]="Customer.Phone" />
+
+        <div class="col-sm-2">
+          <label class="col-form-label float-right" for="Email">Email</label>
+        </div>
+        <input type="text" class="form-control col-sm-10 mb-1" name="Email" id="Email" [(ngModel)]="Customer.Email" />
+
+      </div>
+    </form>
   </div>
-
-<input id="begin" class="btn btn-primary" value="Begin Order" type="button"
-       [routerLink]='["/configure-item"]'
-       (click)="BeginOrder()"/>
+</div>
+<div class="row mb-2">
+  <div class="col-sm-4">
+    <input id="begin" class="btn btn-primary" value="Begin Order" type="button"
+           [routerLink]='["/configure-item"]'
+           (click)="BeginOrder()" />
+  </div>
+  <div class="col-sm-4">
+    <button class="btn btn-warning float-left"
+            (click)="FillCustomer()" [hidden]="!infoShareService.ShowQuickFill">
+      Quick Fill
+    </button>
+  </div>
+</div>
