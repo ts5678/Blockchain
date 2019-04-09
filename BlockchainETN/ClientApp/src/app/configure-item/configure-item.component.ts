@@ -12,13 +12,13 @@ import { NgxMaskModule } from 'ngx-mask';
 export class ConfigureItemComponent {
   public NeedBattery: boolean = false;
   public OrderNetworkCard: boolean = false;
+  public OrderWarranty = null;
+  public OrderBattery = null;
 
   public ShippingAddress: AddressInfo | null;
   public BillingAddress: AddressInfo | null;
   public CustomerPaymentInfo: PaymentInfo | null;
 
-  public OrderWarranty = null;
-  public OrderBattery = null;
   public ExpirationMonth = null;
   public ExpirationYear = null;
 
@@ -26,6 +26,9 @@ export class ConfigureItemComponent {
   public ShowReview: boolean = false;
 
   public Price: number = 1000;
+  public ConfirmationCode: string;
+
+  public OrderName: string;
 
   private TheHttp: Http | null;
 
@@ -88,9 +91,27 @@ export class ConfigureItemComponent {
     //this.GetList();
   }
 
-  public FinishConfiguration() {
-    //this.PurchaseBuild = true;
-    let asdf = 1 + 2;
+
+  public FillUPS() {
+
+    this.NeedBattery = RandomNums.getRandomInt(0, 9) >= 5 ? true : false;
+    if (this.NeedBattery) {
+      let bats = RandomNums.getRandomInt(1, 4);
+      this.OrderBattery = this.Batteries.find(x => x.id == bats);
+    }
+
+
+    this.OrderNetworkCard = RandomNums.getRandomInt(0, 9) >= 5 ? true : false;
+
+    let warrantys = RandomNums.getRandomInt(0, 10);
+    this.OrderWarranty = this.Warranties.find(x => x.id == warrantys);
+    //0 2 3 5 10
+    while (this.OrderWarranty == null) {
+      let warrantys = RandomNums.getRandomInt(0, 10);
+      this.OrderWarranty = this.Warranties.find(x => x.id == warrantys);
+    }
+    
+
   }
 
   public FillPayment() {
@@ -161,13 +182,6 @@ export class ConfigureItemComponent {
   }
 
 
-
-
-  public FinishPayment() {
-    //this.PurchaseBuild = true;
-    let asdf = 1 + 2;
-  }
-
   public ChangeShippingAddress(e) {
     if (this.UseShippingAddress) {
       this.BillingAddress.SendTo = this.ShippingAddress.SendTo;
@@ -220,6 +234,7 @@ export class ConfigureItemComponent {
   
   
   public ReviewOrder() {
+    this.ConfirmationCode = Guid.newGuid();
     this.ShowReview = true;
   }
 

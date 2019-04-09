@@ -6,6 +6,7 @@ import * as libs from './shared-library';
 export class InfoShareService {
 
   public Customer: libs.CustomerInfo | null;
+  public OrderName: string;
 
   public ShowQuickFill: boolean = true;
 }

@@ -11,7 +11,8 @@ import { CustomerInfo, RandomNums } from '../shared-library';
 export class HomeComponent {
 
   private TheHttp : Http | null;
-  public Customer : CustomerInfo | null;
+  public Customer: CustomerInfo | null;
+  public OrderName: string | null;
 
   constructor(http: Http, @Inject('BASE_URL') baseUrl: string, private infoShareService: InfoShareService) {
     this.TheHttp = http;
@@ -20,6 +21,7 @@ export class HomeComponent {
 
   public BeginOrder() {
     this.infoShareService.Customer = this.Customer;
+    this.infoShareService.OrderName = this.OrderName;
   }
 
   public FillCustomer(){

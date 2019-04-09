@@ -48,9 +48,14 @@
         </div>
         <div class="row mb-2">
           <div class="col-sm-4">
-            <button class="btn btn-primary float-left" data-toggle="collapse" data-target="#collapseTwo"
-                    (click)="FinishConfiguration()">
+            <button class="btn btn-primary float-left" data-toggle="collapse" data-target="#collapseTwo">
               Continue
+            </button>
+          </div>
+          <div class="col-xs-4">
+            <button class="btn btn-warning float-left"
+                    (click)="FillUPS()" [hidden]="!infoShareService.ShowQuickFill">
+              Quick Fill
             </button>
           </div>
         </div>
@@ -105,8 +110,7 @@
         </div>
         <div class="row mb-2">
           <div class="col-sm-4">
-            <button class="btn btn-primary float-left" data-toggle="collapse" data-target="#collapse3"
-                    (click)="FinishPayment()">
+            <button class="btn btn-primary float-left" data-toggle="collapse" data-target="#collapse3">
               Continue
             </button>
           </div>
@@ -268,8 +272,8 @@
                 <div class="col-sm-6 border">
                   <div class="panel col-sm-12">
                     <div class="col-sm-12">
-                      <label for="confnum">Confirmation Number -</label>
-                      <span name="confnum">AX7890</span>
+                      <label for="confnum">Confirmation Code -</label>
+                      <span name="confnum">{{ConfirmationCode}}</span>
                     </div>
                     <div class="col-sm-12">
                       <label for="custname">Customer Name -</label>

@@ -1,5 +1,21 @@
 
-<div class="card-body">
+  <div class="row mb-2">
+    <form class="card col-5">
+      <div class="card-header mb-1" id="heading">
+        <h5 class="">
+          Order
+        </h5>
+      </div>
+      <div class="form-row">
+
+        <div class="col-sm-2">
+          <label class="col-form-label float-right" for="ordername">Name</label>
+        </div>
+        <input type="text" class="form-control col-sm-10 mb-1" name="ordername" id="ordername" [(ngModel)]="OrderName" />
+
+      </div>
+    </form>
+  </div>
   <div class="row mb-2">
     <form class="card col-5">
       <div class="card-header mb-1" id="heading">
@@ -27,7 +43,6 @@
       </div>
     </form>
   </div>
-</div>
 <div class="row mb-2">
   <div class="col-sm-4">
     <input id="begin" class="btn btn-primary" value="Begin Order" type="button"

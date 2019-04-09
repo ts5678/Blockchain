@@ -14,7 +14,6 @@ import { PlanningDashboardComponent } from './planning-dashboard/planning-dashbo
 import { NgxLoadingModule } from 'ngx-loading';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { NgxMaskModule } from 'ngx-mask';
-import { SlicePipe } from '@angular/common';
 
 import { InfoShareService } from './infoshare.service';
 
