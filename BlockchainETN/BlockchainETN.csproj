@@ -28,12 +28,20 @@
   <ItemGroup>
     <None Remove="ClientApp\src\app\InfoShare.service.ts" />
     <None Remove="ClientApp\src\app\planning-dashboard\company.json" />
+    <None Remove="ClientApp\src\app\shared-library.spec.ts" />
     <None Remove="ClientApp\src\shared-library.ts" />
   </ItemGroup>
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\app\infoshare.service.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\shared-library.spec.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\shared-library.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ClientApp\src\app\shared-library.spec.js">
+      <DependentUpon>shared-library.spec.ts</DependentUpon>
+    </None>
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

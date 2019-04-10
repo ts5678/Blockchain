@@ -12,6 +12,15 @@ var PaymentInfo = /** @class */ (function () {
     function PaymentInfo() {
     }
     ;
+    PaymentInfo.prototype.toJson = function () {
+        return JSON.stringify({
+            nameoncard: this.NameOnCard,
+            ccnumber: this.CCNumber,
+            expirationmonth: this.ExpirationMonth ? this.ExpirationMonth.id : "",
+            expirationyear: this.ExpirationYear ? this.ExpirationYear.id : "",
+            securitycode: this.SecurityCode
+        });
+    };
     return PaymentInfo;
 }());
 exports.PaymentInfo = PaymentInfo;

@@ -3,6 +3,7 @@ import { Http, RequestOptions, RequestOptionsArgs } from '@angular/http';
 import { InfoShareService } from '../infoshare.service';
 import { AddressInfo, PaymentInfo, CustomerInfo, Guid, RandomNums } from '../shared-library';
 import { NgxMaskModule } from 'ngx-mask';
+import { DebugHelper } from 'protractor/built/debugger';
 
 @Component({
   selector: 'configure-item',
@@ -19,16 +20,11 @@ export class ConfigureItemComponent {
   public BillingAddress: AddressInfo | null;
   public CustomerPaymentInfo: PaymentInfo | null;
 
-  public ExpirationMonth = null;
-  public ExpirationYear = null;
-
   public UseShippingAddress: boolean = false;
   public ShowReview: boolean = false;
 
   public Price: number = 1000;
   public ConfirmationCode: string;
-
-  public OrderName: string;
 
   private TheHttp: Http | null;
 
@@ -120,6 +116,11 @@ export class ConfigureItemComponent {
     this.CustomerPaymentInfo.ExpirationMonth = this.Months.find(x => x.id == 3)
     this.CustomerPaymentInfo.ExpirationYear = this.Years.find(x => x.id == 2024);
     this.CustomerPaymentInfo.SecurityCode = "555";
+
+    let testing = this.CustomerPaymentInfo.toJson();
+
+    let newobj = PaymentInfo.fromJson(JSON.parse(testing));
+    console.log(this.CustomerPaymentInfo.toJson());
   }
 
   public FillShippingAddress(){
@@ -240,6 +241,28 @@ export class ConfigureItemComponent {
 
   public ConfirmOrder() {
     //call datacontroller
+    //this.infoShareService.OrderName
+    //transactionid ??
+    //public ConfirmationCode: string;
+    //public Price: number = 1000;
+
+    //public ShippingAddress: AddressInfo | null;
+    //public BillingAddress: AddressInfo | null;
+
+    //public CustomerPaymentInfo: PaymentInfo | null;
+
+    //this.infoShareService.Customer
+
+    //public OrderWarranty = null;
+    //public NeedBattery: boolean = false;
+    //public OrderBattery = null;
+    //public OrderNetworkCard: boolean = false;
+    //serial ??
+
+
+
+
+
   }
 
 }

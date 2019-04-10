@@ -42,7 +42,7 @@
             <h6 class="float-left">Order Total:</h6>
           </div>
           <div class="col-sm-2">
-            <h6 style="color:darkred">{{Price | currency:'USD':true:'3.2'}} </h6>
+            <h6 style="color:darkred">{{Price | currency:'USD':'symbol-narrow':'3.2'}} </h6>
           </div>
           <br />
         </div>
@@ -294,7 +294,7 @@
                     </div>
                     <div class="col-sm-12">
                       <label for="ot">Order Total -</label>
-                      <span name="ot">{{Price | currency:'USD':true:'3.2'}}</span>
+                      <span name="ot">{{Price | currency:'USD':'symbol-narrow':'3.2'}}</span>
                     </div>
                   </div>
                 </div>
