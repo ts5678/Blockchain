@@ -3,7 +3,6 @@ import { Http, RequestOptions, RequestOptionsArgs } from '@angular/http';
 import { InfoShareService } from '../infoshare.service';
 import { AddressInfo, PaymentInfo, CustomerInfo, Guid, RandomNums } from '../shared-library';
 import { NgxMaskModule } from 'ngx-mask';
-import { DebugHelper } from 'protractor/built/debugger';
 
 @Component({
   selector: 'configure-item',
@@ -13,8 +12,8 @@ import { DebugHelper } from 'protractor/built/debugger';
 export class ConfigureItemComponent {
   public NeedBattery: boolean = false;
   public OrderNetworkCard: boolean = false;
-  public OrderWarranty = null;
-  public OrderBattery = null;
+  public OrderWarranty : { id: number, name: string } = null;
+  public OrderBattery: { id: number, name: string } = null;
 
   public ShippingAddress: AddressInfo | null;
   public BillingAddress: AddressInfo | null;
@@ -25,6 +24,8 @@ export class ConfigureItemComponent {
 
   public Price: number = 1000;
   public ConfirmationCode: string;
+
+  public theJson: string = "";
 
   private TheHttp: Http | null;
 
@@ -72,10 +73,10 @@ export class ConfigureItemComponent {
   ];
 
 
-  private localhost: string = 'http://localhost:55608/api/';//watch for port # changes (project properties & base_url should fix this)
+  private createOrderURL: string;
 
   constructor(http: Http, @Inject('BASE_URL') baseUrl: string, public infoShareService: InfoShareService) {
-    this.localhost = baseUrl + 'api/todo';
+    this.createOrderURL = baseUrl + 'api/createOrder';
     this.TheHttp = http;
 
     this.ShippingAddress = new AddressInfo();
@@ -116,11 +117,6 @@ export class ConfigureItemComponent {
     this.CustomerPaymentInfo.ExpirationMonth = this.Months.find(x => x.id == 3)
     this.CustomerPaymentInfo.ExpirationYear = this.Years.find(x => x.id == 2024);
     this.CustomerPaymentInfo.SecurityCode = "555";
-
-    let testing = this.CustomerPaymentInfo.toJson();
-
-    let newobj = PaymentInfo.fromJson(JSON.parse(testing));
-    console.log(this.CustomerPaymentInfo.toJson());
   }
 
   public FillShippingAddress(){
@@ -241,28 +237,32 @@ export class ConfigureItemComponent {
 
   public ConfirmOrder() {
     //call datacontroller
-    //this.infoShareService.OrderName
+    let ethJson = {};
+    ethJson['ordername'] = this.infoShareService.OrderName;
+    
     //transactionid ??
-    //public ConfirmationCode: string;
-    //public Price: number = 1000;
+    ethJson['confirmationcode'] = this.ConfirmationCode;
+    ethJson['price'] = this.Price;
 
-    //public ShippingAddress: AddressInfo | null;
-    //public BillingAddress: AddressInfo | null;
+    ethJson['shippingaddress'] = this.ShippingAddress.toJsonFriendly();
+    ethJson['billingaddress'] = this.BillingAddress.toJsonFriendly();
+    ethJson['paymentinfo'] = this.CustomerPaymentInfo.toJsonFriendly();
+    ethJson['customer'] = this.infoShareService.Customer.toJsonFriendly();
 
-    //public CustomerPaymentInfo: PaymentInfo | null;
+    ethJson['warranty'] = this.OrderWarranty.id;
+    if (this.NeedBattery)
+      ethJson['battery'] = this.OrderBattery.id;
+    ethJson['networkcard'] = this.OrderNetworkCard;
 
-    //this.infoShareService.Customer
+    ethJson['serial'] = Guid.newGuid();
 
-    //public OrderWarranty = null;
-    //public NeedBattery: boolean = false;
-    //public OrderBattery = null;
-    //public OrderNetworkCard: boolean = false;
-    //serial ??
+    this.theJson = JSON.stringify(ethJson);
 
+    this.TheHttp.post(this.createOrderURL, ethJson).subscribe(result => {
+      var asdf = result;
+    }, error => console.error(error));
 
-
-
-
+    //http.post(this._creatPOUrl, product, options)
   }
 
 }

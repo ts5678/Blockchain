@@ -1,4 +1,4 @@
-import { Guid, PaymentInfo } from './shared-library';
+import { Guid, PaymentInfo, CommonObjects } from './shared-library';
 
 describe('shared-library tests', () => {
 
@@ -23,12 +23,18 @@ describe('shared-library tests', () => {
 
 
   it('PaymentInfo JSON ..', () => {
-    let info = new PaymentInfo();
-    info.NameOnCard = 'Tim S';
-    info.CCNumber = '5555666677778888';
 
-    let jsonOutput = info.toJson();
-    console.log(jsonOutput);
-    expect(jsonOutput.length).toBeGreaterThan(2);
+    let CustomerPaymentInfo = new PaymentInfo();
+    CustomerPaymentInfo.NameOnCard = "Robert Buyer";
+    CustomerPaymentInfo.CCNumber = "4422676780104242";
+    CustomerPaymentInfo.ExpirationMonth = CommonObjects.Months.find(x => x.id == 3)
+    CustomerPaymentInfo.ExpirationYear = CommonObjects.Years.find(x => x.id == 2024);
+    CustomerPaymentInfo.SecurityCode = "555";
+
+    let testing = CustomerPaymentInfo.toJson();
+
+    let newobj = PaymentInfo.fromJson(JSON.parse(testing));
+    console.log(CustomerPaymentInfo.toJson());
+    expect(newobj.CCNumber).toEqual("4422676780104242");
   });
 });

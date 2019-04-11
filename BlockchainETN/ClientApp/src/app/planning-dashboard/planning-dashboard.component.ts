@@ -13,8 +13,6 @@ import { TransactionInfo, Guid, OrderStatus } from '../shared-library';
   styleUrls: ['./planning-dashboard.component.css']
 })
 export class PlanningDashboardComponent {
-  //public NeedBattery: boolean = false;
-  //public OrderName: string = '';
 
   private TheHttp: Http | null;
   public loading: boolean = false;
@@ -34,16 +32,23 @@ export class PlanningDashboardComponent {
     { name: "Transaction Submitter", prop: 'TransactionSubmitter' }
   ];
 
+
+  private getOrdersURL: string;
+
   constructor(http: Http, @Inject('BASE_URL') baseUrl: string) {
+    this.getOrdersURL = baseUrl + 'api/data/getOrders';
     this.TheHttp = http;
 
     this.SelectedTimespan = this.Timespans[0];
 
     this.GetOrders();
-    //this.GetList();
   }
 
   public GetOrders() {
+
+    this.TheHttp.get(this.getOrdersURL).subscribe(result => {
+      var asdf = JSON.parse(result.text());
+    }, error => console.error(error));
 
     //dummy data to test table/display
     let now = new Date();

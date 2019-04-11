@@ -1,4 +1,4 @@
-//namespace SharedLibrary {
+
   export class AddressInfo {
     public SendTo: string;
     public Street: string;
@@ -8,9 +8,56 @@
     public ZipPostalCode: string;
 
     constructor() { };
-}
 
-export class SharedArrays {
+    public toJsonFriendly() {
+
+      let newObj = {
+        sendto: this.SendTo,
+        street: this.Street,
+        city: this.City,
+        stateprovince: this.StateProvince,
+        country: this.Country,
+        zippostalcode: this.ZipPostalCode
+      };
+
+      return newObj;
+    }
+
+    public fromJson(json: AddressInfoJSON) {
+
+      this.SendTo = json.sendto;
+      this.Street = json.street;
+      this.City = json.city;
+      this.StateProvince = json.stateprovince;
+      this.Country = json.country;
+      this.ZipPostalCode = json.zippostalcode;
+    }
+
+    public static fromJson(json: AddressInfoJSON) {
+
+      let newObj = new AddressInfo();
+
+      newObj.SendTo = json.sendto;
+      newObj.Street = json.street;
+      newObj.City = json.city;
+      newObj.StateProvince = json.stateprovince;
+      newObj.Country = json.country;
+      newObj.ZipPostalCode = json.zippostalcode;
+
+      return newObj;
+    }
+  }
+
+  interface AddressInfoJSON {
+    sendto: string;
+    street: string;
+    city: string;
+    stateprovince: string;
+    country: string;
+    zippostalcode: string;
+  }
+
+  export class CommonObjects {
   public static Warranties: { id: number, name: string }[] = [
     { id: 0, name: "None" },
     { id: 2, name: "2 year" },
@@ -54,6 +101,7 @@ export class SharedArrays {
     { id: 2030, name: "2030" }
   ];
 }
+
   export class PaymentInfo {
     public NameOnCard: string;
     public CCNumber: string;
@@ -63,7 +111,7 @@ export class SharedArrays {
 
     constructor() { };
 
-    public toJson() {
+    public toJsonFriendly() {
 
       let newObj = {
         nameoncard: this.NameOnCard,
@@ -73,15 +121,15 @@ export class SharedArrays {
         securitycode: this.SecurityCode
       };
 
-      return JSON.stringify(newObj);
+      return newObj;
     }
     
     public fromJson(json: PaymentInfoJSON) {
 
       this.NameOnCard = json.nameoncard;
       this.CCNumber = json.ccnumber;
-      this.ExpirationMonth = SharedArrays.Months.find(x => x.id == json.expirationmonth);
-      this.ExpirationYear = SharedArrays.Years.find(x => x.id == json.expirationyear);
+      this.ExpirationMonth = CommonObjects.Months.find(x => x.id == json.expirationmonth);
+      this.ExpirationYear = CommonObjects.Years.find(x => x.id == json.expirationyear);
       this.SecurityCode = json.securitycode;
     }
 
@@ -91,8 +139,8 @@ export class SharedArrays {
 
       newObj.NameOnCard = json.nameoncard;
       newObj.CCNumber = json.ccnumber;
-      newObj.ExpirationMonth = SharedArrays.Months.find(x => x.id == json.expirationmonth);
-      newObj.ExpirationYear = SharedArrays.Years.find(x => x.id == json.expirationyear);
+      newObj.ExpirationMonth = CommonObjects.Months.find(x => x.id == json.expirationmonth);
+      newObj.ExpirationYear = CommonObjects.Years.find(x => x.id == json.expirationyear);
       newObj.SecurityCode = json.securitycode;
 
       return newObj;
@@ -114,6 +162,42 @@ export class SharedArrays {
     public Phone: string;
 
     constructor() { };
+
+    public toJsonFriendly() {
+
+      let newObj = {
+        name: this.Name,
+        email: this.Email,
+        phone: this.Phone
+      };
+
+      return newObj;
+    }
+
+    public fromJson(json: CustomerInfoJSON) {
+
+      this.Name = json.name;
+      this.Email = json.email;
+      this.Phone = json.phone;
+    }
+
+    public static fromJson(json: CustomerInfoJSON) {
+
+      let newObj = new CustomerInfo();
+
+      newObj.Name = json.name;
+      newObj.Email = json.email;
+      newObj.Phone = json.phone;
+
+      return newObj;
+    }
+  }
+
+
+  interface CustomerInfoJSON {
+    name: string;
+    email: string;
+    phone: string;
   }
 
   export class TransactionInfo {
@@ -147,10 +231,10 @@ export class SharedArrays {
     Complete = "Complete"
   }
 
-export class RandomNums {
-  static getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+  export class RandomNums {
+    static getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
   }
-}
 
 

@@ -279,7 +279,7 @@
                       <label for="custname">Customer Name -</label>
                       <span name="custname">{{infoShareService?.Customer?.Name}}</span>
                     </div>
-                    
+
                     <div class="col-sm-12">
                       <label for="warranty">Warranty -</label>
                       <span name="warranty">{{OrderWarranty?.name}}</span>
@@ -335,6 +335,11 @@
             <button class="btn btn-primary float-left" (click)="ConfirmOrder()" style="min-width:125px">
               Confirm Order
             </button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <span [hidden]="!infoShareService.ShowQuickFill">{{theJson}}</span>
           </div>
         </div>
       </div>
