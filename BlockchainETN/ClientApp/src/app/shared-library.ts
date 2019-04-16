@@ -200,20 +200,17 @@
     phone: string;
   }
 
-  export class TransactionInfo {
-    public Timestamp: Date;
-    public TransactionID: string;
-    public TransactionType: OrderStatus;
-    public TransactionSubmitter: string;
+export class OrderInfo {
 
-    //constructor() { };
-    constructor(aTimestamp: Date, aTransactionID: string, aTransactionType: OrderStatus, aTransactionSubmitter: string) {
-      this.Timestamp = aTimestamp;
-      this.TransactionID = aTransactionID;
-      this.TransactionType = aTransactionType;
-      this.TransactionSubmitter = aTransactionSubmitter;
-    };
-  }
+  public SubmissionDate: Date;
+  public OrderID: string;
+  public OrderName: string;
+  public Status: OrderStatus;
+  public CustomerName: string;
+
+  constructor() { };
+
+}
 
   export class Guid {
     static newGuid() {
@@ -224,7 +221,7 @@
     }
   }
 
-  export const enum OrderStatus {
+  export enum OrderStatus {
     OrderReceived = "Order Received",
     BeingBuilt = "Being Built",
     PreparingForShipping = "Preparing For Shipping",

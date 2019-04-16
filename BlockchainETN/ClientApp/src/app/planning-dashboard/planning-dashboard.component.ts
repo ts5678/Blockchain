@@ -4,7 +4,7 @@ import { NgxLoadingModule } from 'ngx-loading';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { TableColumn, ColumnMode } from '@swimlane/ngx-datatable';
 
-import { TransactionInfo, Guid, OrderStatus } from '../shared-library';
+import { OrderInfo, Guid, OrderStatus } from '../shared-library';
 
 
 @Component({
@@ -24,12 +24,16 @@ export class PlanningDashboardComponent {
     { id: 3, name: "1 Month" }];
 
   public rows = [];
+  public rawdataRows = [];
+
+  public context;
 
   public columns = [
-    { name: "Timestramp", prop: "Timestamp" },
-    { name: "Transaction ID", prop: 'TransactionID' },
-    { name: "Transaction Type", prop: 'TransactionType' },
-    { name: "Transaction Submitter", prop: 'TransactionSubmitter' }
+    { name: "Order Created", prop: "SubmissionDate" },
+    { name: "Order ID", prop: 'OrderID' },
+    { name: "Order Name", prop: 'OrderName' },
+    { name: "Status", prop: 'Status' },
+    { name: "Customer Name", prop: 'CustomerName' }
   ];
 
 
@@ -45,35 +49,33 @@ export class PlanningDashboardComponent {
   }
 
   public GetOrders() {
+    this.loading = true;
+    var context = this;
+    this.TheHttp.get(this.getOrdersURL).subscribe((result) => {
+      this.loading = false;
+      var ethRows = JSON.parse(result.text());
+      this.rawdataRows = ethRows;
 
-    this.TheHttp.get(this.getOrdersURL).subscribe(result => {
-      var asdf = JSON.parse(result.text());
-    }, error => console.error(error));
+      for (let i = 0; i < ethRows.returnValue1.length; i++) {
 
-    //dummy data to test table/display
-    let now = new Date();
+        let orderinfo = JSON.parse(ethRows.returnValue5[i]);
 
-    this.rows.push(new TransactionInfo(now, Guid.newGuid(), OrderStatus.BeingBuilt, "Bob Still"));
-    this.rows.push(new TransactionInfo(now, Guid.newGuid(), OrderStatus.BeingBuilt, "Ryan Red"));
+        let ord = new OrderInfo();
+        ord.OrderID = ethRows.returnValue1[i];
+        ord.SubmissionDate = new Date(ethRows.returnValue2[i]);
+        ord.Status = ethRows.returnValue4[i];
+        ord.CustomerName = orderinfo.customer.name;
+        ord.OrderName = orderinfo.ordername;
 
-    let date1 = now.setDate(now.getDate() -1);
-    this.rows.push(new TransactionInfo(new Date(date1), Guid.newGuid(), OrderStatus.OrderReceived, "Ryan Red"));
-    this.rows.push(new TransactionInfo(new Date(date1), Guid.newGuid(), OrderStatus.OrderReceived, "Bill Zed"));
+        this.rows.push(ord);
+      }
 
-    let date2 = now.setDate(now.getDate() -2);
-    this.rows.push(new TransactionInfo(new Date(date2), Guid.newGuid(), OrderStatus.OrderReceived, "Fred Mikel"));
-    this.rows.push(new TransactionInfo(new Date(date2), Guid.newGuid(), OrderStatus.OrderReceived, "Bob Still"));
-    this.rows.push(new TransactionInfo(new Date(date2), Guid.newGuid(), OrderStatus.OrderReceived, "Bob Still"));
-
-    let date3 = now.setDate(now.getDate() -3);
-    this.rows.push(new TransactionInfo(new Date(date3), Guid.newGuid(), OrderStatus.Complete, "Fred Mikel"));
-    this.rows.push(new TransactionInfo(new Date(date3), Guid.newGuid(), OrderStatus.Complete, "Dun Zoe"));
-    this.rows.push(new TransactionInfo(new Date(date3), Guid.newGuid(), OrderStatus.Complete, "Dun Zoe"));
-    this.rows.push(new TransactionInfo(new Date(date3), Guid.newGuid(), OrderStatus.Complete, "Fred Mikel"));
-
-    let date4 = now.setDate(now.getDate() -10);
-    this.rows.push(new TransactionInfo(new Date(date4), Guid.newGuid(), OrderStatus.PreparingForShipping, "Bill Zed"));
-    this.rows.push(new TransactionInfo(new Date(date4), Guid.newGuid(), OrderStatus.PreparingForShipping, "Bob Still"));
+      this.rows = [...this.rows];
+    }
+    , error => {
+        this.loading = false;
+        console.error(error);
+    });
 
   }
 

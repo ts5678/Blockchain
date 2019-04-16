@@ -27,9 +27,15 @@ namespace BlockchainETN.Controllers
     {
         string localhost = "http://localhost:31890/api/data";
 
+        static string senderAddress = "0x5aCFB76c34EB65536fe59Be833647792603b164b";
+        static string senderPassword = "4206523e9f645f29d31115266628b6d4c48722c263553f27f1fb1bf37e558c8e";
+        static string orderSystemJson = "C:\\Users\\Terj\\Source\\Repos\\ts5678\\Order-By-Ethereum\\build\\contracts\\OrderSystem.json";
+        
+
         // GET api/data
         [HttpPost]
         [Route("CreateOrder")]
+        [Route("data/CreateOrder")]
         public string CreateOrder([FromBody] JObject content)
         {
             HttpClient client = new HttpClient();
@@ -58,17 +64,12 @@ namespace BlockchainETN.Controllers
             var web3 = new Web3("http://127.0.0.1:7545");
 
             //testing with the ethereum /truffle example from the petshop tutorial
-            var json = JObject.Load(new JsonTextReader(new StreamReader(System.IO.File.OpenRead("C:\\Users\\e9923570\\Source\\Repos\\Order-By-Ethereum\\Order-By-Ethereum\\build\\contracts\\OrderSystem.json"))));
+            var json = JObject.Load(new JsonTextReader(new StreamReader(System.IO.File.OpenRead(orderSystemJson))));
             var abi = json["abi"].ToString();
             var bytecode = json["bytecode"].ToString();
             var ganacheOrderSystemContractAddress = json["networks"]["5777"]["address"].ToString();
 
-            var senderAddress = "0xb53a1FcA5bAf097C43B6357109056D3835625bC6";
-            var senderPassword = "99e3ff29ba50a4d89ee760dc3d5f7a2f05fea81ba268d25771d368e19aaa80f9";
-
-            var unlockAccountResult = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, senderPassword, 1200).ConfigureAwait(false);
-
-
+            var unlockAccountResult = await web3.Personal.UnlockAccount.SendRequestAsync(DataController.senderAddress, DataController.senderPassword, 1200).ConfigureAwait(false);
 
             CreateOrderFunction createOrder = new CreateOrderFunction();
             createOrder.Orderid = Guid.NewGuid().ToString();
@@ -78,10 +79,6 @@ namespace BlockchainETN.Controllers
             OrderSystemService service = new OrderSystemService(web3, ganacheOrderSystemContractAddress);
             var theresult = await service.CreateOrderRequestAndWaitForReceiptAsync(createOrder);
 
-            //get the contract we deployed
-            var contract = web3.Eth.GetContract(abi, ganacheOrderSystemContractAddress);
-            var getOrdersResult = await contract.GetFunction("getOrders").CallDeserializingToObjectAsync<GetOrdersOutputDTOBase>();
-
             return new decimal(1);
         }
 
@@ -90,13 +87,10 @@ namespace BlockchainETN.Controllers
             var web3 = new Web3("http://127.0.0.1:7545");
 
             //testing with the ethereum /truffle example from the petshop tutorial
-            var json = JObject.Load(new JsonTextReader(new StreamReader(System.IO.File.OpenRead("C:\\Users\\e9923570\\Source\\Repos\\Order-By-Ethereum\\Order-By-Ethereum\\build\\contracts\\OrderSystem.json"))));
+            var json = JObject.Load(new JsonTextReader(new StreamReader(System.IO.File.OpenRead(orderSystemJson))));
             var abi = json["abi"].ToString();
             var bytecode = json["bytecode"].ToString();
             var ganacheOrderSystemContractAddress = json["networks"]["5777"]["address"].ToString();
-
-            var senderAddress = "0xb53a1FcA5bAf097C43B6357109056D3835625bC6";
-            var senderPassword = "99e3ff29ba50a4d89ee760dc3d5f7a2f05fea81ba268d25771d368e19aaa80f9";
 
             var unlockAccountResult = await web3.Personal.UnlockAccount.SendRequestAsync(senderAddress, senderPassword, 1200).ConfigureAwait(false);
 

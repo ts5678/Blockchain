@@ -76,7 +76,7 @@ export class ConfigureItemComponent {
   private createOrderURL: string;
 
   constructor(http: Http, @Inject('BASE_URL') baseUrl: string, public infoShareService: InfoShareService) {
-    this.createOrderURL = baseUrl + 'api/createOrder';
+    this.createOrderURL = baseUrl + 'api/data/createOrder';
     this.TheHttp = http;
 
     this.ShippingAddress = new AddressInfo();

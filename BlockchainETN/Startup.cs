@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace BlockchainETN
 {
@@ -62,6 +63,7 @@ namespace BlockchainETN
 
                 if (env.IsDevelopment())
                 {
+                    spa.Options.StartupTimeout = new TimeSpan(0, 2, 0);
                     spa.UseAngularCliServer(npmScript: "start");
                 }
             });

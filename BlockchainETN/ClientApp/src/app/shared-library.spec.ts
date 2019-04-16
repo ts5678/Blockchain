@@ -31,10 +31,10 @@ describe('shared-library tests', () => {
     CustomerPaymentInfo.ExpirationYear = CommonObjects.Years.find(x => x.id == 2024);
     CustomerPaymentInfo.SecurityCode = "555";
 
-    let testing = CustomerPaymentInfo.toJson();
+    let testing = CustomerPaymentInfo.toJsonFriendly();
 
     let newobj = PaymentInfo.fromJson(JSON.parse(testing));
-    console.log(CustomerPaymentInfo.toJson());
+    console.log(CustomerPaymentInfo.toJsonFriendly());
     expect(newobj.CCNumber).toEqual("4422676780104242");
   });
 });
