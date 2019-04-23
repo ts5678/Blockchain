@@ -305,6 +305,10 @@
                       <span name="cc">{{CustomerPaymentInfo.CCNumber | slice:-4}}</span>
                     </div>
                     <div class="col-sm-12">
+                      <label for="name">Est. Date of Arrival -</label>
+                      <span name="name">{{EstDateOfArrival| date:'shortDate'}}</span>
+                    </div>
+                    <div class="col-sm-12">
                       <label for="name">Send To -</label>
                       <span name="name">{{ShippingAddress.SendTo}}</span>
                     </div>

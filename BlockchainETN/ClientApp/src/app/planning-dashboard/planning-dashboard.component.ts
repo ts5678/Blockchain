@@ -5,6 +5,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { TableColumn, ColumnMode } from '@swimlane/ngx-datatable';
 
 import { OrderInfo, Guid, OrderStatus } from '../shared-library';
+import { DatePipe } from '@angular/common';
 
 
 @Component({
@@ -25,8 +26,6 @@ export class PlanningDashboardComponent {
 
   public rows = [];
   public rawdataRows = [];
-
-  public context;
 
   public columns = [
     { name: "Order Created", prop: "SubmissionDate" },
@@ -50,7 +49,7 @@ export class PlanningDashboardComponent {
 
   public GetOrders() {
     this.loading = true;
-    var context = this;
+
     this.TheHttp.get(this.getOrdersURL).subscribe((result) => {
       this.loading = false;
       var ethRows = JSON.parse(result.text());
@@ -62,8 +61,13 @@ export class PlanningDashboardComponent {
 
         let ord = new OrderInfo();
         ord.OrderID = ethRows.returnValue1[i];
-        ord.SubmissionDate = new Date(ethRows.returnValue2[i]);
-        ord.Status = ethRows.returnValue4[i];
+
+        let unixTimestamp = ethRows.returnValue2[i];
+        let datePipe = new DatePipe('en-US');
+        ord.SubmissionDate = datePipe.transform(unixTimestamp * 1000, 'MM/dd/yyyy')
+        //let myFormattedDate = new Date(dateString);
+        
+        ord.Status = this.GetOrderStatus(ethRows.returnValue4[i]);
         ord.CustomerName = orderinfo.customer.name;
         ord.OrderName = orderinfo.ordername;
 
@@ -75,8 +79,18 @@ export class PlanningDashboardComponent {
     , error => {
         this.loading = false;
         console.error(error);
-    });
+      });
+  }
 
+  private GetOrderStatus(status: number) {
+    if (status == 0)
+      return OrderStatus.OrderReceived;
+    else if (status == 1)
+      return OrderStatus.BeingBuilt;
+    else if (status == 2)
+      return OrderStatus.PreparingForShipping;
+    else if (status == 3)
+      return OrderStatus.Complete;
   }
 
   public RunSpinner() {

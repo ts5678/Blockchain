@@ -24,6 +24,7 @@ export class ConfigureItemComponent {
 
   public Price: number = 1000;
   public ConfirmationCode: string;
+  public EstDateOfArrival: Date;
 
   public theJson: string = "";
 
@@ -232,6 +233,9 @@ export class ConfigureItemComponent {
   
   public ReviewOrder() {
     this.ConfirmationCode = Guid.newGuid();
+    this.EstDateOfArrival = new Date();
+    this.EstDateOfArrival.setDate(this.EstDateOfArrival.getDate() + 14);
+
     this.ShowReview = true;
   }
 

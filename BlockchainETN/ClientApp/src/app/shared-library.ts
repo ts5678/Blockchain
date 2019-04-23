@@ -202,10 +202,10 @@
 
 export class OrderInfo {
 
-  public SubmissionDate: Date;
+  public SubmissionDate: string;
   public OrderID: string;
   public OrderName: string;
-  public Status: OrderStatus;
+  public Status: string;
   public CustomerName: string;
 
   constructor() { };
