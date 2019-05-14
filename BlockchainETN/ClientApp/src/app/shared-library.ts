@@ -221,11 +221,30 @@ export class OrderInfo {
     }
   }
 
+  export class SharedFunctions {
+    static GetOrderStatus(status: number) {
+      if (status == 0)
+        return OrderStatus.OrderReceived;
+      else if (status == 1)
+        return OrderStatus.BeingBuilt;
+      else if (status == 2)
+        return OrderStatus.PreparingForShipping;
+      else if (status == 3)
+        return OrderStatus.InTransit;
+      else if (status == 4)
+        return OrderStatus.ShippingComplete;
+      else if (status == 5)
+        return OrderStatus.ServiceRequested;
+    }
+  }
+
   export enum OrderStatus {
     OrderReceived = "Order Received",
     BeingBuilt = "Being Built",
     PreparingForShipping = "Preparing For Shipping",
-    Complete = "Complete"
+    InTransit = "In Transit",
+    ShippingComplete = "ShippingComplete",
+    ServiceRequested = "Service Requested"
   }
 
   export class RandomNums {

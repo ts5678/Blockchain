@@ -20,9 +20,9 @@ export class PlanningDashboardComponent {
 
   public SelectedTimespan = null;
   public Timespans = [
-    { id: 0, name: "24 Hours" },
-    { id: 2, name: "1 Week" },
-    { id: 3, name: "1 Month" }];
+    { id: 86400, name: "24 Hours" },
+    { id: 604800, name: "1 Week" },
+    { id: 2629743, name: "1 Month" }];
 
   public rows = [];
   public rawdataRows = [];
@@ -36,61 +36,59 @@ export class PlanningDashboardComponent {
   ];
 
 
-  private getOrdersURL: string;
+  private getTransactionsURL: string;
 
   constructor(http: Http, @Inject('BASE_URL') baseUrl: string) {
-    this.getOrdersURL = baseUrl + 'api/data/getOrders';
+    this.getTransactionsURL = baseUrl + 'api/data/GetTransactions';
     this.TheHttp = http;
 
     this.SelectedTimespan = this.Timespans[0];
 
-    this.GetOrders();
+    this.GetTransactions();
   }
 
-  public GetOrders() {
+  public SearchTransactions() {
+    this.GetTransactions();
+  }
+
+  public GetTransactions() {
     this.loading = true;
 
-    this.TheHttp.get(this.getOrdersURL).subscribe((result) => {
+    let ethJson = {};
+    ethJson['time'] = this.SelectedTimespan.id;
+    this.rows = [];
+
+    this.TheHttp.post(this.getTransactionsURL, ethJson).subscribe((result) => {
       this.loading = false;
       var ethRows = JSON.parse(result.text());
       this.rawdataRows = ethRows;
 
-      for (let i = 0; i < ethRows.returnValue1.length; i++) {
+      //for (let i = 0; i < ethRows.returnValue1.length; i++)
+      //{
 
-        let orderinfo = JSON.parse(ethRows.returnValue5[i]);
+      //  let orderinfo = JSON.parse(ethRows.returnValue5[i]);
 
-        let ord = new OrderInfo();
-        ord.OrderID = ethRows.returnValue1[i];
+      //  let ord = new OrderInfo();
+      //  ord.OrderID = ethRows.returnValue1[i];
 
-        let unixTimestamp = ethRows.returnValue2[i];
-        let datePipe = new DatePipe('en-US');
-        ord.SubmissionDate = datePipe.transform(unixTimestamp * 1000, 'MM/dd/yyyy')
-        //let myFormattedDate = new Date(dateString);
+      //  let unixTimestamp = ethRows.returnValue2[i];
+      //  let datePipe = new DatePipe('en-US');
+      //  ord.SubmissionDate = datePipe.transform(unixTimestamp * 1000, 'MM/dd/yyyy')
+      //  //let myFormattedDate = new Date(dateString);
         
-        ord.Status = this.GetOrderStatus(ethRows.returnValue4[i]);
-        ord.CustomerName = orderinfo.customer.name;
-        ord.OrderName = orderinfo.ordername;
+      //  ord.Status = this.GetOrderStatus(ethRows.returnValue4[i]);
+      //  ord.CustomerName = orderinfo.customer.name;
+      //  ord.OrderName = orderinfo.ordername;
 
-        this.rows.push(ord);
-      }
+      //  this.rows.push(ord);
+      //}
 
-      this.rows = [...this.rows];
+      //this.rows = [...this.rows];
     }
     , error => {
         this.loading = false;
         console.error(error);
       });
-  }
-
-  private GetOrderStatus(status: number) {
-    if (status == 0)
-      return OrderStatus.OrderReceived;
-    else if (status == 1)
-      return OrderStatus.BeingBuilt;
-    else if (status == 2)
-      return OrderStatus.PreparingForShipping;
-    else if (status == 3)
-      return OrderStatus.Complete;
   }
 
   public RunSpinner() {
