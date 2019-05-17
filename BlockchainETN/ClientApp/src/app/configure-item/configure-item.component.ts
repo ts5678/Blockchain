@@ -26,6 +26,8 @@ export class ConfigureItemComponent {
   public ConfirmationCode: string;
   public EstDateOfArrival: Date;
 
+  public OrderConfirmed: boolean;
+
   public theJson: string = "";
 
   private TheHttp: Http | null;
@@ -85,6 +87,7 @@ export class ConfigureItemComponent {
     this.CustomerPaymentInfo = new PaymentInfo();
 
     this.OrderWarranty = this.Warranties.find(x => x.id == 0);
+    this.OrderConfirmed = false;
     
     //this.GetList();
   }
@@ -264,6 +267,7 @@ export class ConfigureItemComponent {
 
     this.TheHttp.post(this.createOrderURL, ethJson).subscribe(result => {
       var asdf = result;
+      this.OrderConfirmed = true;
     }, error => console.error(error));
 
     //http.post(this._creatPOUrl, product, options)

@@ -208,6 +208,8 @@ export class OrderInfo {
   public Status: string;
   public CustomerName: string;
 
+  public ChangeStatusText: string;
+
   constructor() { };
 
 }
@@ -222,28 +224,43 @@ export class OrderInfo {
   }
 
   export class SharedFunctions {
-    static GetOrderStatus(status: number) {
+    static GetOrderStatusString(status: number) : string {
       if (status == 0)
         return OrderStatus.OrderReceived;
       else if (status == 1)
         return OrderStatus.BeingBuilt;
       else if (status == 2)
-        return OrderStatus.PreparingForShipping;
+        return OrderStatus.ReadyToShip;
       else if (status == 3)
         return OrderStatus.InTransit;
       else if (status == 4)
-        return OrderStatus.ShippingComplete;
+        return OrderStatus.Delivered;
       else if (status == 5)
         return OrderStatus.ServiceRequested;
+    }
+
+    static GetOrderStatusNumber(status: string) : number {
+      if (status == OrderStatus.OrderReceived)
+        return 0;
+      else if (status == OrderStatus.BeingBuilt)
+        return 1;
+      else if (status == OrderStatus.ReadyToShip)
+        return 2;
+      else if (status == OrderStatus.InTransit)
+        return 3;
+      else if (status == OrderStatus.Delivered)
+        return 4;
+      else if (status == OrderStatus.ServiceRequested)
+        return 5;
     }
   }
 
   export enum OrderStatus {
     OrderReceived = "Order Received",
     BeingBuilt = "Being Built",
-    PreparingForShipping = "Preparing For Shipping",
+    ReadyToShip = "Ready To Ship",
     InTransit = "In Transit",
-    ShippingComplete = "ShippingComplete",
+    Delivered = "Delivered",
     ServiceRequested = "Service Requested"
   }
 

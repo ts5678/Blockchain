@@ -39,9 +39,11 @@ export class ManufacturingDashboardComponent {
 
 
   private getOrdersURL: string;
+  private changeStatusURL: string;
 
   constructor(http: Http, @Inject('BASE_URL') baseUrl: string) {
     this.getOrdersURL = baseUrl + 'api/data/getOrders';
+    this.changeStatusURL = baseUrl + 'api/data/changeStatus';
     this.TheHttp = http;
 
     this.SelectedTimespan = this.Timespans[0];
@@ -77,9 +79,10 @@ export class ManufacturingDashboardComponent {
         ord.SubmissionDate = datePipe.transform(unixTimestamp * 1000, 'MM/dd/yyyy')
         //let myFormattedDate = new Date(dateString);
         
-        ord.Status = SharedFunctions.GetOrderStatus(ethRows.returnValue4[i]);
+        ord.Status = SharedFunctions.GetOrderStatusString(ethRows.returnValue4[i]);
         ord.CustomerName = orderinfo.customer.name;
         ord.OrderName = orderinfo.ordername;
+        ord.ChangeStatusText = this.GetChangeStatusText(ord);
 
         this.rows.push(ord);
       }
@@ -92,9 +95,32 @@ export class ManufacturingDashboardComponent {
       });
   }
 
-  public SetStatus(row)
-  {
-    let a = 1 + 1;
+  public SetStatus(row) {
+    let ethJson = {};
+    ethJson['orderid'] = row.OrderID;
+    ethJson['status'] = SharedFunctions.GetOrderStatusNumber(row.Status) + 1;
+
+    this.loading = true;
+    this.TheHttp.post(this.changeStatusURL, ethJson).subscribe((result) => {
+      this.loading = false;
+
+    }, error => {
+      this.loading = false;
+      console.error(error);
+    });
+  }
+
+  public GetChangeStatusText(row) {
+    if (OrderStatus.OrderReceived == row.Status)
+      return "Start building...";
+    else if (OrderStatus.BeingBuilt == row.Status)
+      return "Finish production...";
+    else if (OrderStatus.ReadyToShip == row.Status)
+      return "Ship to customer...";
+    else if (OrderStatus.InTransit == row.Status)
+      return "Complete delivery...";
+    else
+      return "";
   }
 
   public RunSpinner() {

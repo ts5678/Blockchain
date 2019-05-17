@@ -18,6 +18,8 @@ using Newtonsoft.Json.Linq;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Contracts.ContractHandlers;
 using Nethereum.RPC.Eth.Transactions;
+using OrderByEthereum.Contracts.OrderSystem.ContractDefinition;
+using OrderByEthereum.Contracts.OrderSystem;
 
 namespace BlockchainETN.Controllers
 {
@@ -28,15 +30,14 @@ namespace BlockchainETN.Controllers
         string localhost = "http://localhost:31890/api/data";
 
         //main account we run everything from
-        static string senderAddress = "0x5aCFB76c34EB65536fe59Be833647792603b164b";//h
-        static string senderPassword = "4206523e9f645f29d31115266628b6d4c48722c263553f27f1fb1bf37e558c8e";//h
+        //static string senderAddress = "0x5aCFB76c34EB65536fe59Be833647792603b164b";//h
+        //static string senderPassword = "4206523e9f645f29d31115266628b6d4c48722c263553f27f1fb1bf37e558c8e";//h
         //our initial 'order system'
-        static string orderSystemJson = "C:\\Users\\Terj\\Source\\Repos\\ts5678\\Order-By-Ethereum\\build\\contracts\\OrderSystem.json";//h
+        //static string orderSystemJson = "C:\\Users\\Terj\\Source\\Repos\\ts5678\\Order-By-Ethereum\\build\\contracts\\OrderSystem.json";//h
 
-        //static string senderAddress = "0xb53a1FcA5bAf097C43B6357109056D3835625bC6";//w
-        //static string senderPassword = "99e3ff29ba50a4d89ee760dc3d5f7a2f05fea81ba268d25771d368e19aaa80f9";//w
-
-        //static string orderSystemJson = "C:\\Users\\e9923570\\Source\\Repos\\Order-By-Ethereum\\Order-By-Ethereum\\build\\contracts\\OrderSystem.json";//w
+        static string senderAddress = "0xC63De344f05dE01f872A03077CF6d1Cd8d2EDfbd";//w
+        static string senderPassword = "3e7a94adb94282645819dd5fff470f645aa95648ffd8511e25979ed36b783ab8";//w
+        static string orderSystemJson = "C:\\Users\\e9923570\\Source\\Repos\\Order-By-Ethereum\\Order-By-Ethereum\\build\\contracts\\OrderSystem.json";//w
 
 
         // GET api/data
@@ -90,6 +91,22 @@ namespace BlockchainETN.Controllers
 
             return retVal;
         }
+
+        [HttpPost]
+        [Route("ChangeStatus")]
+        [Route("data/ChangeStatus")]
+        public bool ChangeStatus([FromBody] JObject content)
+        {
+            var orderid = content.Root["orderid"].ToString();
+            int newstatus = -1;
+            int.TryParse(content.Root["status"].ToString(), out newstatus);
+
+            var retVal = ChangeOrderStatus(orderid, newstatus);
+            retVal.Wait();
+
+            return retVal.Result;
+        }
+
         static async Task<decimal> CreateOrderEth(string orderinfo)
         {
             var web3 = new Web3("http://127.0.0.1:7545");
@@ -113,10 +130,35 @@ namespace BlockchainETN.Controllers
 
 
             OrderSystemService service = new OrderSystemService(web3, ganacheOrderSystemContractAddress);
-            service.ContractHandler.EthApiContractService.Transactions.
+
             var theresult = await service.CreateOrderRequestAndWaitForReceiptAsync(createOrder);
 
             return new decimal(1);
+        }
+
+        static async Task<bool> ChangeOrderStatus(string orderid, int status)
+        {
+            var web3 = new Web3("http://127.0.0.1:7545");
+
+            //testing with the ethereum /truffle example from the petshop tutorial
+            var json = JObject.Load(new JsonTextReader(new StreamReader(System.IO.File.OpenRead(orderSystemJson))));
+            var abi = json["abi"].ToString();
+            var bytecode = json["bytecode"].ToString();
+            var ganacheOrderSystemContractAddress = json["networks"]["5777"]["address"].ToString();
+
+            var unlockAccountResult = await web3.Personal.UnlockAccount.SendRequestAsync(DataController.senderAddress, DataController.senderPassword, 1200).ConfigureAwait(false);
+
+            ChangeStatusFunction statusChange = new ChangeStatusFunction();
+            statusChange.Orderid = orderid;
+            statusChange.Newstatus = status;
+            statusChange.FromAddress = senderAddress;
+
+
+            OrderSystemService service = new OrderSystemService(web3, ganacheOrderSystemContractAddress);
+
+            var theresult = await service.ChangeStatusRequestAsync(statusChange);
+
+            return theresult.Length > 0;
         }
 
         static async Task<string> GetTransactions(BigInteger timespan)
