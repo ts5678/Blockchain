@@ -113,6 +113,7 @@ namespace BlockchainETN.Controllers
 
 
             OrderSystemService service = new OrderSystemService(web3, ganacheOrderSystemContractAddress);
+            service.ContractHandler.EthApiContractService.Transactions.
             var theresult = await service.CreateOrderRequestAndWaitForReceiptAsync(createOrder);
 
             return new decimal(1);
@@ -167,12 +168,21 @@ namespace BlockchainETN.Controllers
                         var status = rpt.Status.Value;
                         
                         var to = tx.To;
-                        if (to == null) to = "to:NULL";
+                        if (to == null)
+                            to = "to:NULL";
+
                         var v = tx.Value.Value;
                         var g = tx.Gas.Value;
                         var gp = tx.GasPrice.Value;
                         Console.WriteLine(th.ToString() + " " + ti.ToString() + " " + nc.ToString() + " " + from.ToString() + " " + to.ToString() + " " + v.ToString() + " " + g.ToString() + " " + gp.ToString());
-                        Console.WriteLine("logs : " + rpt.Logs);
+                        if (rpt.Logs.Count > 0)
+                        {
+                            foreach (var rp in rpt.Logs)
+                            {
+                                var tpic = rp["topics"];
+                                Console.WriteLine("logs : " + tpic[0].ToString());
+                            }
+                        }
 
                     }
                     catch (Exception ex)
