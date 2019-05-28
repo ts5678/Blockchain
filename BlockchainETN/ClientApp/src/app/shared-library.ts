@@ -207,6 +207,7 @@ export class OrderInfo {
   public OrderName: string;
   public Status: string;
   public CustomerName: string;
+  public SubmissionDateNumber: number;
 
   public ChangeStatusText: string;
 

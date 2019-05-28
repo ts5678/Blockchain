@@ -161,6 +161,23 @@ namespace BlockchainETN.Controllers
             return theresult.Length > 0;
         }
 
+        static Dictionary<string, string> GetABIFunctionMap(JToken abi)
+        {
+            Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+
+            foreach(var item in abi)
+            {
+                //Console.Out.WriteLine(item);
+                var theName = item["name"].ToString();
+                var theSig = item["signature"].ToString();
+
+                //Console.Out.WriteLine("item : " + theName.ToString() + "   " + theSig.ToString());
+                keyValuePairs[theSig] = theName;
+            }
+
+            return keyValuePairs;
+        }
+
         static async Task<string> GetTransactions(BigInteger timespan)
         {
             var web3 = new Web3("http://127.0.0.1:7545");
@@ -177,9 +194,9 @@ namespace BlockchainETN.Controllers
 
             var transactionsByHash = new EthGetTransactionByHash(web3.Client);
             //var theresult = await transactionsByHash.SendRequestAsync(senderAddress);
+            var abiMap = GetABIFunctionMap(json["abi"]);
 
-
-
+            var arrayOfTransactions = new List<EthTransaction>();
             var maxBlockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
             var LastMaxBlockNumber = maxBlockNumber;
 
@@ -192,21 +209,19 @@ namespace BlockchainETN.Controllers
                 int txCount = trans.Length;
                 txTotalCount += txCount;
 
-                //block.Timestamp
-                
-
+                             
                 foreach (var tx in trans)
                 {
                     try
                     { 
                        
                         var bn = tx.BlockNumber.Value;
-                        var th = tx.TransactionHash;
+                        var transHash = tx.TransactionHash;
                         var ti = tx.TransactionIndex.Value;
                         var nc = tx.Nonce.Value;
                         var from = tx.From;
 
-                        var rpt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(th);
+                        var rpt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transHash);
                         var status = rpt.Status.Value;
                         
                         var to = tx.To;
@@ -216,13 +231,18 @@ namespace BlockchainETN.Controllers
                         var v = tx.Value.Value;
                         var g = tx.Gas.Value;
                         var gp = tx.GasPrice.Value;
-                        Console.WriteLine(th.ToString() + " " + ti.ToString() + " " + nc.ToString() + " " + from.ToString() + " " + to.ToString() + " " + v.ToString() + " " + g.ToString() + " " + gp.ToString());
+                        Console.WriteLine(transHash.ToString() + " " + ti.ToString() + " " + nc.ToString() + " " + from.ToString() + " " + to.ToString() + " " + v.ToString() + " " + g.ToString() + " " + gp.ToString());
                         if (rpt.Logs.Count > 0)
                         {
                             foreach (var rp in rpt.Logs)
                             {
                                 var tpic = rp["topics"];
                                 Console.WriteLine("logs : " + tpic[0].ToString());
+                                string funcVal = string.Empty;
+
+                                abiMap.TryGetValue(tpic[0].ToString(), out funcVal);
+                                if (funcVal != null)
+                                    arrayOfTransactions.Add(new EthTransaction(block.Number.Value.ToString(), transHash, funcVal, from));
                             }
                         }
 
@@ -236,8 +256,7 @@ namespace BlockchainETN.Controllers
                 }
                 Console.WriteLine();
             }
-
-            return "";
+             return JsonConvert.SerializeObject(arrayOfTransactions);
         }
 
         static async Task<GetOrdersOutputDTOBase> GetOrdersEth(BigInteger timespan)
@@ -335,5 +354,20 @@ namespace BlockchainETN.Controllers
         }
     }
 
+    public class EthTransaction
+    {
+        public string Block { get; set; }
+        public string Hash { get; set; }
+        public string CallType { get; set; }
+        public string Submitter { get; set; }
+        public EthTransaction(string block, string hash, string calltype, string submitter)
+        {
+            Block = block;
+            Hash = hash;
+            CallType = calltype;
+            Submitter = submitter;
+        }
 
+
+    }
 }
