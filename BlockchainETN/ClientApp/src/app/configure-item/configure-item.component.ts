@@ -1,23 +1,38 @@
-import { Component, Inject } from '@angular/core';
-import { Http, RequestOptions, RequestOptionsArgs } from '@angular/http';
-import { InfoShareService } from '../infoshare.service';
-import { AddressInfo, PaymentInfo, CustomerInfo, Guid, RandomNums } from '../shared-library';
-import { NgxMaskModule } from 'ngx-mask';
+import { OrderSystemService } from "./../services/order-system.service";
+import { Component, Inject, EventEmitter, Output } from "@angular/core";
+import { Http, RequestOptions, RequestOptionsArgs } from "@angular/http";
+import { InfoShareService } from "../infoshare.service";
+import {
+  AddressInfo,
+  PaymentInfo,
+  CustomerInfo,
+  Guid,
+  RandomNums
+} from "../shared-library";
+import { NgxMaskModule } from "ngx-mask";
+import { Web3Service } from "../services/web3.service";
+import { Orders } from "../model/Orders";
 
 @Component({
-  selector: 'configure-item',
-  templateUrl: './configure-item.component.html',
-  styleUrls: ['./configure-item.component.css']
+  selector: "configure-item",
+  templateUrl: "./configure-item.component.html",
+  styleUrls: ["./configure-item.component.css"]
 })
 export class ConfigureItemComponent {
+
+  @Output() OrderConfirmedEvent: EventEmitter<any> = new EventEmitter();
+
+
   public NeedBattery: boolean = false;
   public OrderNetworkCard: boolean = false;
-  public OrderWarranty : { id: number, name: string } = null;
-  public OrderBattery: { id: number, name: string } = null;
+  public OrderWarranty: { id: number; name: string } = null;
+  public OrderBattery: { id: number; name: string } = null;
 
   public ShippingAddress: AddressInfo | null;
   public BillingAddress: AddressInfo | null;
   public CustomerPaymentInfo: PaymentInfo | null;
+
+
 
   public UseShippingAddress: boolean = false;
   public ShowReview: boolean = false;
@@ -32,20 +47,22 @@ export class ConfigureItemComponent {
 
   private TheHttp: Http | null;
 
-  public Warranties: { id: number, name: string }[] = [
+  public Warranties: { id: number; name: string }[] = [
     { id: 0, name: "None" },
     { id: 2, name: "2 year" },
     { id: 3, name: "3 year" },
     { id: 5, name: "5 year" },
-    { id: 10, name: "10 year" }];
+    { id: 10, name: "10 year" }
+  ];
 
-  public Batteries: { id: number, name: string }[] = [
+  public Batteries: { id: number; name: string }[] = [
     { id: 1, name: "1 battery" },
     { id: 2, name: "2 batteries" },
     { id: 3, name: "3 batteries" },
-    { id: 4, name: "4 batteries" }];
+    { id: 4, name: "4 batteries" }
+  ];
 
-  public Months: { id: number, name: string }[] = [
+  public Months: { id: number; name: string }[] = [
     { id: 1, name: "January" },
     { id: 2, name: "February" },
     { id: 3, name: "March" },
@@ -60,7 +77,7 @@ export class ConfigureItemComponent {
     { id: 12, name: "December" }
   ];
 
-  public Years: { id: number, name: string }[] = [
+  public Years: { id: number; name: string }[] = [
     { id: 2019, name: "2019" },
     { id: 2020, name: "2020" },
     { id: 2021, name: "2021" },
@@ -75,32 +92,39 @@ export class ConfigureItemComponent {
     { id: 2030, name: "2030" }
   ];
 
-
   private createOrderURL: string;
 
-  constructor(http: Http, @Inject('BASE_URL') baseUrl: string, public infoShareService: InfoShareService) {
-    this.createOrderURL = baseUrl + 'api/data/createOrder';
+  constructor(
+    http: Http,
+    @Inject("BASE_URL") baseUrl: string,
+    public infoShareService: InfoShareService,
+    private web3service: Web3Service,
+    private OSService: OrderSystemService
+  ) {
+    this.createOrderURL = baseUrl + "api/data/createOrder";
     this.TheHttp = http;
-
     this.ShippingAddress = new AddressInfo();
     this.BillingAddress = new AddressInfo();
     this.CustomerPaymentInfo = new PaymentInfo();
 
     this.OrderWarranty = this.Warranties.find(x => x.id == 0);
     this.OrderConfirmed = false;
+    console.log(this.web3service.web3);
     
+
     //this.GetList();
   }
 
+  ngOnInit(){
+    console.log(`Random number is ${this.OSService.getRand()}`);
+  }
 
   public FillUPS() {
-
     this.NeedBattery = RandomNums.getRandomInt(0, 9) >= 5 ? true : false;
     if (this.NeedBattery) {
       let bats = RandomNums.getRandomInt(1, 4);
       this.OrderBattery = this.Batteries.find(x => x.id == bats);
     }
-
 
     this.OrderNetworkCard = RandomNums.getRandomInt(0, 9) >= 5 ? true : false;
 
@@ -111,21 +135,21 @@ export class ConfigureItemComponent {
       let warrantys = RandomNums.getRandomInt(0, 10);
       this.OrderWarranty = this.Warranties.find(x => x.id == warrantys);
     }
-    
-
   }
 
   public FillPayment() {
     this.CustomerPaymentInfo.NameOnCard = "Robert Buyer";
     this.CustomerPaymentInfo.CCNumber = "4422676780104242";
-    this.CustomerPaymentInfo.ExpirationMonth = this.Months.find(x => x.id == 3)
-    this.CustomerPaymentInfo.ExpirationYear = this.Years.find(x => x.id == 2024);
+    this.CustomerPaymentInfo.ExpirationMonth = this.Months.find(x => x.id == 3);
+    this.CustomerPaymentInfo.ExpirationYear = this.Years.find(
+      x => x.id == 2024
+    );
     this.CustomerPaymentInfo.SecurityCode = "555";
   }
 
-  public FillShippingAddress(){
+  public FillShippingAddress() {
     let one = new AddressInfo();
-    one.SendTo ="Joe B.";
+    one.SendTo = "Joe B.";
     one.Street = "8468 East University Street";
     one.City = "Scotch Plains";
     one.StateProvince = "NJ";
@@ -179,9 +203,7 @@ export class ConfigureItemComponent {
 
     this.BillingAddress = FakeAddresses[rand1];
     this.ShippingAddress = FakeAddresses[rand2];
-  
   }
-
 
   public ChangeShippingAddress(e) {
     if (this.UseShippingAddress) {
@@ -191,8 +213,7 @@ export class ConfigureItemComponent {
       this.BillingAddress.StateProvince = this.ShippingAddress.StateProvince;
       this.BillingAddress.ZipPostalCode = this.ShippingAddress.ZipPostalCode;
       this.BillingAddress.Country = this.ShippingAddress.Country;
-    }
-    else {
+    } else {
       this.BillingAddress.SendTo = "";
       this.BillingAddress.Street = "";
       this.BillingAddress.City = "";
@@ -232,8 +253,6 @@ export class ConfigureItemComponent {
       this.BillingAddress.Country = this.ShippingAddress.Country;
   }
 
-  
-  
   public ReviewOrder() {
     this.ConfirmationCode = Guid.newGuid();
     this.EstDateOfArrival = new Date();
@@ -245,35 +264,65 @@ export class ConfigureItemComponent {
   public ConfirmOrder() {
     //call datacontroller
     let ethJson = {};
-    ethJson['ordername'] = this.infoShareService.OrderName;
-    
+    ethJson["ordername"] = this.infoShareService.OrderName;
+
     //transactionid ??
-    ethJson['confirmationcode'] = this.ConfirmationCode;
-    ethJson['price'] = this.Price;
+    ethJson["confirmationcode"] = this.ConfirmationCode;
+    ethJson["price"] = this.Price;
 
-    ethJson['shippingaddress'] = this.ShippingAddress.toJsonFriendly();
-    ethJson['billingaddress'] = this.BillingAddress.toJsonFriendly();
-    ethJson['paymentinfo'] = this.CustomerPaymentInfo.toJsonFriendly();
-    ethJson['customer'] = this.infoShareService.Customer.toJsonFriendly();
+    ethJson["shippingaddress"] = this.ShippingAddress.toJsonFriendly();
+    ethJson["billingaddress"] = this.BillingAddress.toJsonFriendly();
+    ethJson["paymentinfo"] = this.CustomerPaymentInfo.toJsonFriendly();
+    ethJson["customer"] = this.infoShareService.Customer.toJsonFriendly();
 
-    ethJson['warranty'] = this.OrderWarranty.id;
-    if (this.NeedBattery)
-      ethJson['battery'] = this.OrderBattery.id;
-    ethJson['networkcard'] = this.OrderNetworkCard;
+    ethJson["warranty"] = this.OrderWarranty.id;
+    if (this.NeedBattery) ethJson["battery"] = this.OrderBattery.id;
+    ethJson["networkcard"] = this.OrderNetworkCard;
 
-    ethJson['serial'] = Guid.newGuid();
+    ethJson["serial"] = Guid.newGuid();
 
     this.theJson = JSON.stringify(ethJson);
 
-    this.TheHttp.post(this.createOrderURL, ethJson).subscribe(result => {
-      var asdf = result;
+    this.OSService.createOrder([ethJson['serial'], JSON.stringify(ethJson), this.web3service.accounts[0] ],{
+      from: this.web3service.web3.eth.accounts[0]
+    })
+    // .subscribe((result) => { console.log(result); 
+    //   let orderData = new Orders();
+      
+    //   this.OSService.transSubject.next(result);
+    //  });
+    .on("transactionHash", hash => {
+      console.log(hash);
       this.OrderConfirmed = true;
-    }, error => console.error(error));
+    })
+    .on("receipt", receipt => {
+      console.log(`receipt hash : ${receipt} . now emitting event`);
+      console.log(receipt);
+      let orderData = new Orders();
+      console.log('CREATE_ORDER' in receipt.events);
+      debugger;
+      if('events' in receipt){
+        console.log('Events in receipt')
+        if('CREATE_ORDER' in receipt.events){
+          console.log('Create ORder in events')
+          let eventData = receipt.events['CREATE_ORDER'].returnValues;
+          console.log(eventData);
+          orderData.OrderDate = eventData['SubDate'];
+          orderData.OrderID= eventData['orderID'];
+          orderData.OrderName = JSON.parse(eventData['orderInfo'])['ordername'];
+          orderData.OrderStatus = eventData['orderStatus'];
+          orderData.OrderSubmitter = this.web3service.accounts[0];
+          console.log(`${orderData.OrderID} ------------ ${orderData.OrderName} --------------- ${orderData.OrderSubmitter}`);
+          this.OSService.transSubject.next(orderData);
+        }
+      }
+    });
+    // this.TheHttp.post(this.createOrderURL, ethJson).subscribe(result => {
+    //   var asdf = result;
+    //   this.OrderConfirmed = true;
+    //   console.log("Order has been confirmed. ! with Receipt and Transaction hash ")
+    // }, error => console.error(error));
 
     //http.post(this._creatPOUrl, product, options)
   }
-
 }
-
-
-

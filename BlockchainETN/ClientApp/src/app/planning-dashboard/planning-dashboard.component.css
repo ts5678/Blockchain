@@ -2,3 +2,9 @@
   margin-left: -10px;
   z-index: 1;
 }
+
+
+.datatable-body-cell{
+  padding : 2rem !important;
+  margin : 1rem !important
+}

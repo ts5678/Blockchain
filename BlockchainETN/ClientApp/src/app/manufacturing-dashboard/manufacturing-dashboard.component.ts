@@ -5,6 +5,8 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { TableColumn, ColumnMode } from '@swimlane/ngx-datatable';
 
 import { OrderInfo, Guid, OrderStatus, SharedFunctions } from '../shared-library';
+import { OrderSystemService } from "../services/order-system.service";
+import { Web3Service } from '../services/web3.service';
 import { DatePipe } from '@angular/common';
 
 
@@ -41,19 +43,64 @@ export class ManufacturingDashboardComponent {
   private getOrdersURL: string;
   private changeStatusURL: string;
 
-  constructor(http: Http, @Inject('BASE_URL') baseUrl: string) {
+  constructor(http: Http, @Inject('BASE_URL') baseUrl: string, private web3Service: Web3Service, private OSService : OrderSystemService) {
     this.getOrdersURL = baseUrl + 'api/data/getOrders';
     this.changeStatusURL = baseUrl + 'api/data/changeStatus';
     this.TheHttp = http;
 
     this.SelectedTimespan = this.Timespans[0];
 
-    this.GetOrders();
+   // this.GetOrders();
+    console.log(this.web3Service.web3);
   }
 
   public SearchOrders() {
     this.GetOrders();
   }
+
+  ngOnInit(){
+      console.log(`Random number is ${this.OSService.getRand()}`);
+    console.log(`Manufacturing dashboard initiated.`);
+    this.loading = true;
+
+    this.OSService.manuSubject.asObservable().subscribe({
+      next: result => {
+        console.log(result);
+        console.log(`manufacturing updates`);
+        this.rows = [...this.rows]
+        //search in rows if oreader is already there.
+
+        let existingOrders = [];
+         
+  
+        this.rows.map((row)=>{
+          if(result.OrderID === row.OrderID){
+            //order already in thr row.. just update it.
+            row.Status = result.OrderStatus
+            existingOrders.push(row.OrderID)
+          }});
+        
+        if(existingOrders.indexOf(result.OrderID) === -1){
+         this.rows.push({
+          SubmissionDate: result.OrderDate.toISOString(),
+          EstimatedDate : result.OrderEstDate.toISOString(),
+          OrderID: result.OrderID,
+          OrderName: result.OrderName,
+          Status: result.OrderStatus,
+          CustomerName: result.OrderSubmitter         
+        
+        })};
+      
+        console.log(this.rows.length);
+        this.loading = false;
+        this.rows =[...this.rows]
+        
+      }
+    });
+    console.log(`Length is  : ${this.rows.length}`);
+    this.OSService.getAllOrders();
+  }
+
 
   public GetOrders() {
     this.loading = true;

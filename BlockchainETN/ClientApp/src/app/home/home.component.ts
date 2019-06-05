@@ -3,6 +3,7 @@ import { Http, RequestOptions, RequestOptionsArgs } from '@angular/http';
 import { InfoShareService } from '../infoshare.service';
 
 import { CustomerInfo, RandomNums } from '../shared-library';
+import { OrderSystemService } from '../services/order-system.service';
 
 @Component({
   selector: 'app-home',
@@ -13,10 +14,13 @@ export class HomeComponent {
   private TheHttp : Http | null;
   public Customer: CustomerInfo | null;
   public OrderName: string | null;
+  public OSContract :  any;
 
-  constructor(http: Http, @Inject('BASE_URL') baseUrl: string, private infoShareService: InfoShareService) {
+  constructor(http: Http, @Inject('BASE_URL') baseUrl: string, private infoShareService: InfoShareService, private OSService: OrderSystemService) {
     this.TheHttp = http;
     this.Customer = new CustomerInfo();
+    this.OSContract = OSService.setContract();
+  
   }
 
   public BeginOrder() {

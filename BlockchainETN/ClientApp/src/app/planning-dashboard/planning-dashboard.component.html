@@ -39,15 +39,25 @@
     <div class="card-body">
       <div class="col-sm-12">
         <ngx-datatable class="bootstrap"
-                       [rows]="rows"
-                       [columns]="columns"
-                       [columnMode]="'force'"
-                       [headerHeight]="50"
-                       [footerHeight]="50"
-                       [rowHeight]="40"
-                       [limit]="10">
+                      [sorts]="sorting"
+                      [rows]="rows"
+                      [columns]="columns"
+                      [columnMode]="'force'"
+                      [headerHeight]="50"
+                      [footerHeight]="50"
+                      [rowHeight]="auto"
+                      [selected]="selected"
+                      [selectionType]="'checkbox'"
+                      [limit]="10"
+                      (select) = 'onRowSelect($event)'
+                     >
+    
         </ngx-datatable>
       </div>
+      <br/>
+      <button class="btn btn-primary col-sm-12" (click) = "changeStatus()">Acknowledge Order</button>
+      
     </div>
   </div>
+  
 </div>

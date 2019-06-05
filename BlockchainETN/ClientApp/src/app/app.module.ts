@@ -16,6 +16,10 @@ import { NgxMaskModule } from 'ngx-mask';
 
 import { InfoShareService } from './infoshare.service';
 import { ManufacturingDashboardComponent } from './manufacturing-dashboard/manufacturing-dashboard.component';
+import { Web3Service } from './services/web3.service';
+import { OrderSystemService } from './services/order-system.service';
+
+
 
 @NgModule({
   declarations: [
@@ -41,7 +45,7 @@ import { ManufacturingDashboardComponent } from './manufacturing-dashboard/manuf
       { path: 'manufacturing-dashboard', component: ManufacturingDashboardComponent },
     ])
   ],
-  providers: [InfoShareService],
+  providers: [InfoShareService,Web3Service,OrderSystemService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
