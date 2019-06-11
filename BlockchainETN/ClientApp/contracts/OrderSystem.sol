@@ -17,13 +17,14 @@ contract OrderSystem {
         uint EstimatedReceptionDate;
         OrderStatusEnum OrderStatus;
         string OrderInfo;
+        string submitter;
     }
 
     mapping (string => Order) Orders;
     string[] OrderIds;
 
     event CreateOrderMsg(string msg, string value);
-    event CREATE_ORDER(string orderID, uint SubDate,uint EstDate, uint orderStatus, string orderInfo );
+    event ORDER_DETAILS(string orderID, uint SubDate,uint EstDate, uint orderStatus, string orderInfo, string submitter );
     event GetOrdersMsg(string msg);
     event GetAllOrdersMsg(string msg);
     event ChangeStatus(string msg, uint enu);
@@ -60,9 +61,9 @@ contract OrderSystem {
 
         emit CreateOrderMsg("createOrder orderid:", orderid);
         emit CreateOrderMsg("submitter:", submitter);
-        emit CREATE_ORDER(orderid, now, twoWeeksFromNow, uint(OrderStatusEnum.OrderReceived), orderinfo); 
+        emit ORDER_DETAILS(orderid, now, twoWeeksFromNow, uint(OrderStatusEnum.OrderReceived), orderinfo, submitter); 
 
-        Orders[orderid] = Order(orderid, now, twoWeeksFromNow, OrderStatusEnum.OrderReceived, orderinfo);
+        Orders[orderid] = Order(orderid, now, twoWeeksFromNow, OrderStatusEnum.OrderReceived, orderinfo, submitter);
 
         return orderid;
     }
@@ -73,9 +74,10 @@ contract OrderSystem {
         if(compareStrings(existingOrder.OrderID, ""))
             return false;
 
-        emit ChangeStatus(orderid, newstatus);
+      //  emit ChangeStatus(orderid, newstatus);
+        emit ORDER_DETAILS(orderid, existingOrder.SubmissionDate, existingOrder.EstimatedReceptionDate, uint(OrderStatusEnum(newstatus)), existingOrder.OrderInfo, existingOrder.submitter);
 
-        Orders[orderid] = Order(orderid, existingOrder.SubmissionDate, existingOrder.EstimatedReceptionDate, OrderStatusEnum(newstatus), existingOrder.OrderInfo);
+        Orders[orderid] = Order(orderid, existingOrder.SubmissionDate, existingOrder.EstimatedReceptionDate, OrderStatusEnum(newstatus), existingOrder.OrderInfo, existingOrder.submitter);
 
         return true;
     }
@@ -111,7 +113,7 @@ contract OrderSystem {
         return (orderids,submissiondates,estimateddates,statuses,orderinfos);
     }
 
-    function getAllOrders() public view returns (string[] memory,uint[] memory,uint[] memory, uint[] memory,string[] memory){
+    function getAllOrders() public view returns (string[] memory,uint[] memory,uint[] memory, uint[] memory,string[] memory, string[] memory){
 
         //emit GetAllOrdersMsg("getAllOrders");
 
@@ -121,6 +123,7 @@ contract OrderSystem {
         uint[] memory estimateddates = new uint[](OrderIds.length);
         uint[] memory statuses = new uint[](OrderIds.length);
         string[] memory orderinfos = new string[](OrderIds.length);
+        string[] memory submitters = new string[](OrderIds.length);
 
         for(uint i = 0;i < OrderIds.length; i++)
         {
@@ -130,15 +133,16 @@ contract OrderSystem {
             estimateddates[i] = ord.EstimatedReceptionDate;
             statuses[i] = uint(ord.OrderStatus);
             orderinfos[i] = ord.OrderInfo;
+            submitters[i] = ord.submitter;
         }
-        return (orderids,submissiondates,estimateddates,statuses,orderinfos);
+        return (orderids,submissiondates,estimateddates,statuses,orderinfos, submitters);
     }
 
     function getOrderInfo(string memory orderid) public view returns (string memory, string memory, uint, uint, OrderStatusEnum){
 
         Order memory theOrd = Orders[orderid];
 
-        return (theOrd.OrderID, theOrd.OrderInfo, theOrd.SubmissionDate, theOrd.EstimatedReceptionDate, theOrd.OrderStatus );
+        return (theOrd.OrderID, theOrd.OrderInfo, theOrd.SubmissionDate, theOrd.EstimatedReceptionDate, theOrd.OrderStatus);
 
     }
 }

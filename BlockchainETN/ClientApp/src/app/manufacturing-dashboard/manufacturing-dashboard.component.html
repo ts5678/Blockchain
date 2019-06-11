@@ -90,7 +90,8 @@
               <span>{{column.name}}</span>
             </ng-template>
             <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-              <button type="button" class="btn btn-link btn-sm" (click)="SetStatus(row)" data-toggle="modal" data-target="#exampleModalCenter">{{row['ChangeStatusText']}}</button>
+              <!-- <button type="button" class="btn-primary " (click)="SetStatus(row)" data-toggle="modal" data-target="#exampleModalCenter">{{row['ChangeStatusText']}}</button> -->
+              <button type="button" [ngClass]="{true : 'btn-success', false: 'btn-primary'} [row['ChangeStatusText'] === completeStatus]" (click)="SetStatus(row)">{{row['ChangeStatusText']}}</button>
             </ng-template>
           </ngx-datatable-column>
         </ngx-datatable>
@@ -108,7 +109,7 @@
           </button>
         </div>
         <div class="modal-body">
-          ...
+        ...
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

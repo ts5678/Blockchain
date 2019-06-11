@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { HttpModule } from '@angular/http';
-
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
@@ -13,11 +12,12 @@ import { PlanningDashboardComponent } from './planning-dashboard/planning-dashbo
 import { NgxLoadingModule } from 'ngx-loading';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { NgxMaskModule } from 'ngx-mask';
-
 import { InfoShareService } from './infoshare.service';
 import { ManufacturingDashboardComponent } from './manufacturing-dashboard/manufacturing-dashboard.component';
 import { Web3Service } from './services/web3.service';
 import { OrderSystemService } from './services/order-system.service';
+import {ToastrModule, ToastrService} from 'ngx-toastr';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 
 
@@ -35,6 +35,11 @@ import { OrderSystemService } from './services/order-system.service';
     HttpClientModule,
     FormsModule,
     HttpModule,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot({
+      timeOut: 5000,
+      preventDuplicates: true
+    }),
     NgxLoadingModule.forRoot({}),
     NgxDatatableModule,
     NgxMaskModule.forRoot(),
@@ -45,7 +50,7 @@ import { OrderSystemService } from './services/order-system.service';
       { path: 'manufacturing-dashboard', component: ManufacturingDashboardComponent },
     ])
   ],
-  providers: [InfoShareService,Web3Service,OrderSystemService],
+  providers: [InfoShareService,Web3Service,OrderSystemService, ToastrService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

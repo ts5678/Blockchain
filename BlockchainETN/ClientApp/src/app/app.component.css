@@ -4,3 +4,43 @@
     padding-top: 50px;
   }
 }
+
+
+
+.datatable-body-cell-label{
+  display:flex;
+  justify-content: center;
+  word-wrap: break-word;
+  padding-left: 1rem;
+  padding-right: 1.5rem;
+}
+
+.datatable-body-cell-label>span{
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: initial;
+  width: 100%;
+  white-space: pre-wrap;
+  text-align: center;
+}
+
+
+
+.datatable-body-cell-label > span{
+  word-wrap: break-word;
+}
+
+.datatable-header-cell-label{ 
+  display:flex;
+  justify-content: center;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.datatable-header{
+  border: 2px solid grey
+}
+
+#toast-container > div {
+  opacity:0.8;
+}

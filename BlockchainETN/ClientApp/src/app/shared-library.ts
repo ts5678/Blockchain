@@ -237,6 +237,7 @@ export class OrderInfo {
         return OrderStatus.Delivered;
       else if (status == 5)
         return OrderStatus.ServiceRequested;
+    
     }
 
     static GetOrderStatusNumber(status: string) : number {

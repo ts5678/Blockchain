@@ -1,10 +1,11 @@
-import { Component, Inject } from "@angular/core";
+import { ToastrService } from 'ngx-toastr';
+import { Component, Inject, ViewEncapsulation } from "@angular/core";
 import { Http, RequestOptions, RequestOptionsArgs } from "@angular/http";
 import { NgxLoadingModule } from "ngx-loading";
 import { NgxDatatableModule } from "@swimlane/ngx-datatable";
 import { TableColumn, ColumnMode } from "@swimlane/ngx-datatable";
 
-import { OrderInfo, Guid, OrderStatus } from "../shared-library";
+import { OrderInfo, Guid, OrderStatus, SharedFunctions } from "../shared-library";
 import { DatePipe } from "@angular/common";
 import { OrderSystemService } from "../services/order-system.service";
 import {Web3Service} from '../services/web3.service'
@@ -23,6 +24,8 @@ export class PlanningDashboardComponent {
     prop: "SubmissionDate",
     dir: "desc"
   }]
+
+  intialOrdersLoaded = false;
 
   public SelectedTimespan = null;
   public Timespans = [
@@ -60,7 +63,8 @@ export class PlanningDashboardComponent {
     http: Http,
     @Inject("BASE_URL") baseUrl: string,
     private OSService: OrderSystemService,
-    private web3service: Web3Service
+    private web3service: Web3Service,
+    private toastr : ToastrService
   ) {
     this.getTransactionsURL = baseUrl + "api/data/GetTransactions";
     this.TheHttp = http;
@@ -83,25 +87,31 @@ export class PlanningDashboardComponent {
   }
 
   ngOnInit() {
-    console.log(`Random number is ${this.OSService.getRand()}`);
+    this.OSService.transInitialLoadComplete = false;
     console.log(`Planning dashboard initiated.`);
+    
     this.loading = true;
 
     this.OSService.transSubject.asObservable().subscribe({
       next: result => {
         console.log(result);
-        console.log(`transaction updates`);
+        console.log(`Intial data Loaded = ${this.OSService.transInitialLoadComplete}`)
         this.rows = [...this.rows]
         //search in rows if oreader is already there.
-
+        console.log(this.rows.length);
         let existingOrders = [];
          
   
         this.rows.map((row)=>{
           if(result.OrderID === row.OrderID){
             //order already in thr row.. just update it.
+
+            if(this.OSService.transInitialLoadComplete && row.Status !== result.OrderStatus)
+              this.toastr.warning(`${row.OrderName} has been changed`,"Orders updated");
+
             row.Status = result.OrderStatus
             existingOrders.push(row.OrderID)
+           
           }});
         
         if(existingOrders.indexOf(result.OrderID) === -1){
@@ -111,11 +121,14 @@ export class PlanningDashboardComponent {
           OrderID: result.OrderID,
           OrderName: result.OrderName,
           Status: result.OrderStatus,
-          CustomerName: result.OrderSubmitter         
+          CustomerName: result.OrderSubmitter
+        })
+        if(this.OSService.transInitialLoadComplete){
+          this.toastr.success(`${result.OrderName} has been added`,"Orders Added");
+        }
+      };
         
-        })};
-      
-        console.log(this.rows.length);
+        
         this.loading = false;
         this.rows =[...this.rows]
         
@@ -123,8 +136,15 @@ export class PlanningDashboardComponent {
     });
     console.log(`Length is  : ${this.rows.length}`);
     this.GetTransactions();
+    this.intialOrdersLoaded = true;
   }
 
+
+  ngOnDestroy(){
+    console.log(`Planning Component destoryed.`);
+    this.OSService.transInitialLoadComplete = false;
+    console.log(`Intial data Loaded = ${this.OSService.transInitialLoadComplete}`)
+  }
   
 
   public SearchTransactions() {
@@ -135,12 +155,14 @@ export class PlanningDashboardComponent {
 
 async changeStatus(){
  // await this.OSService.getAllOrders();
-  
-  
+   
 
   this.selected.map((row)=>{
     let orderId = row.OrderID;
-    this.OSService.updateStatus(orderId, 2, {
+    if(SharedFunctions.GetOrderStatusNumber(row.Status) > 0){
+      this.toastr.error(`Order ${row.OrderName} has been already Acknowleged`,'Error');
+    }else{
+    this.OSService.updateStatus(orderId, SharedFunctions.GetOrderStatusNumber(row.Status)+1, {
       from: this.web3service.web3.eth.accounts[0]
     })
     .on('transactionHash',(transactionHash)=>{
@@ -150,11 +172,11 @@ async changeStatus(){
       console.log(`Update status successful. Got the Receipt.`);
       console.log(receipt);
       if(receipt){
-        await this.OSService.getAllOrders();;
+        await this.OSService.getAllOrders();
       }
     })
     .on('error', console.error )
-
+  }
   })
 }
   async GetTransactions() {

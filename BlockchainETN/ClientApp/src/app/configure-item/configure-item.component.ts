@@ -1,3 +1,4 @@
+import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { OrderSystemService } from "./../services/order-system.service";
 import { Component, Inject, EventEmitter, Output } from "@angular/core";
 import { Http, RequestOptions, RequestOptionsArgs } from "@angular/http";
@@ -12,6 +13,7 @@ import {
 import { NgxMaskModule } from "ngx-mask";
 import { Web3Service } from "../services/web3.service";
 import { Orders } from "../model/Orders";
+import { Router } from '@angular/router';
 
 @Component({
   selector: "configure-item",
@@ -99,7 +101,9 @@ export class ConfigureItemComponent {
     @Inject("BASE_URL") baseUrl: string,
     public infoShareService: InfoShareService,
     private web3service: Web3Service,
-    private OSService: OrderSystemService
+    private OSService: OrderSystemService,
+    private toastr: ToastrService,
+    private router : Router
   ) {
     this.createOrderURL = baseUrl + "api/data/createOrder";
     this.TheHttp = http;
@@ -110,13 +114,12 @@ export class ConfigureItemComponent {
     this.OrderWarranty = this.Warranties.find(x => x.id == 0);
     this.OrderConfirmed = false;
     console.log(this.web3service.web3);
-    
+
 
     //this.GetList();
   }
 
-  ngOnInit(){
-    console.log(`Random number is ${this.OSService.getRand()}`);
+  ngOnInit() {
   }
 
   public FillUPS() {
@@ -279,44 +282,50 @@ export class ConfigureItemComponent {
     if (this.NeedBattery) ethJson["battery"] = this.OrderBattery.id;
     ethJson["networkcard"] = this.OrderNetworkCard;
 
+
     ethJson["serial"] = Guid.newGuid();
 
     this.theJson = JSON.stringify(ethJson);
 
-    this.OSService.createOrder([ethJson['serial'], JSON.stringify(ethJson), this.web3service.accounts[0] ],{
+    this.OSService.createOrder([ethJson['serial'], JSON.stringify(ethJson), this.web3service.accounts[0]], {
       from: this.web3service.web3.eth.accounts[0]
     })
-    // .subscribe((result) => { console.log(result); 
-    //   let orderData = new Orders();
+      .on("transactionHash", hash => {
+        console.log(hash);
+        this.toastr.info(`Order Initiated. We will notify you when order gets confirmed.`);
+        this.OrderConfirmed = true;
+
+      })
+      .on("confirmation", (confirmationNumber, receipt) => {
+        console.log(`Confirmation Number ${confirmationNumber}`);
+        if(confirmationNumber == 0){
+          console.log(`First Confirmation`);
+          this.toastr.success(`Order confirmed. You will notified for each step of the order.`, 'Confirmation', {
+            timeOut: 4000
+          });
+          this.router.navigateByUrl("/");
+                  //   console.log(`receipt hash : ${receipt} . now emitting event`);
+        //   console.log(receipt);
+        //   let orderData = new Orders();
+        //   console.log('CREATE_ORDER' in receipt.events);
+        //   if ('events' in receipt) {
+        //     console.log('Events in receipt')
+        //     // if ('CREATE_ORDER' in receipt.events) {
+        //     //   let eventRawData = receipt.events[this.OSService.Events.CREATE_ORDER.name].raw.data;
+        //     //   this.OSService.handleCreateEvent(eventRawData, null, receipt);
+        //     // } else if (this.OSService.Events.ORDER_DETAILS.name in receipt.events) {
+        //     //   let eventRawData = receipt.events[this.OSService.Events.CREATE_ORDER.name].raw.data;
+        //     //   this.OSService.handleOrderDetailsEvent(eventRawData, null, receipt);
+        //     // }
+        //   }
+        // }
       
-    //   this.OSService.transSubject.next(result);
-    //  });
-    .on("transactionHash", hash => {
-      console.log(hash);
-      this.OrderConfirmed = true;
-    })
-    .on("receipt", receipt => {
-      console.log(`receipt hash : ${receipt} . now emitting event`);
-      console.log(receipt);
-      let orderData = new Orders();
-      console.log('CREATE_ORDER' in receipt.events);
-      debugger;
-      if('events' in receipt){
-        console.log('Events in receipt')
-        if('CREATE_ORDER' in receipt.events){
-          console.log('Create ORder in events')
-          let eventData = receipt.events['CREATE_ORDER'].returnValues;
-          console.log(eventData);
-          orderData.OrderDate = eventData['SubDate'];
-          orderData.OrderID= eventData['orderID'];
-          orderData.OrderName = JSON.parse(eventData['orderInfo'])['ordername'];
-          orderData.OrderStatus = eventData['orderStatus'];
-          orderData.OrderSubmitter = this.web3service.accounts[0];
-          console.log(`${orderData.OrderID} ------------ ${orderData.OrderName} --------------- ${orderData.OrderSubmitter}`);
-          this.OSService.transSubject.next(orderData);
-        }
-      }
-    });
+      }})
+      .on('receipt', (receipt) => {
+        
+      })
+      .on('error', console.error);
+    ;
     // this.TheHttp.post(this.createOrderURL, ethJson).subscribe(result => {
     //   var asdf = result;
     //   this.OrderConfirmed = true;
