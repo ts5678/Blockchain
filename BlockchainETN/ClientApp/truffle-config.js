@@ -29,6 +29,11 @@ module.exports = {
       host:"127.0.0.1",
       port: 9545,
       network_id:"*",
+     },
+     eatontestnet :{
+       host : "40.117.130.67",
+       port :  8546,
+       network_id: "*"
      }
   }
 };

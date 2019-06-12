@@ -193,6 +193,7 @@ export class OrderSystemService {
   public async setContract() {
     if (!this.OSContract) {
       console.log(`Setting the contract`);
+
       let networkid = this.web3Service.web3.eth.net.getId().then(networkID => {
         this.OSContractAddr = OrderSystem.networks[networkID].address;
         console.log(`This OSContractAddress :  ${this.OSContractAddr}`)
