@@ -337,8 +337,8 @@ export class OrderSystemService {
     let orderNums = resultObj[0].length
     for (let counter = 0; counter < orderNums; counter++) {
       order.OrderID = resultObj[0][counter];
-      order.OrderDate = new Date(parseInt(resultObj[1][counter]));
-      order.OrderEstDate = new Date(parseInt(resultObj[2][counter]));
+      order.OrderDate = new Date(parseInt(resultObj[1][counter]) * 1000);
+      order.OrderEstDate = new Date(parseInt(resultObj[2][counter]) * 1000);
       order.OrderStatus = SharedFunctions.GetOrderStatusString(resultObj[3][counter]);
       let orderInfo = resultObj[4][counter]
       order.OrderName = JSON.parse(orderInfo)["ordername"];
@@ -346,9 +346,9 @@ export class OrderSystemService {
       order.OrderSubmitter = resultObj[5][counter]
 
       this.transSubject.next(order);
-      if(order.OrderStatus !== OrderStatus.OrderReceived)
-      this.manuSubject.next(order);
-    
+      if (order.OrderStatus !== OrderStatus.OrderReceived)
+        this.manuSubject.next(order);
+
     }
 
     this.transInitialLoadComplete = true;
