@@ -254,6 +254,36 @@ export class OrderInfo {
       else if (status == OrderStatus.ServiceRequested)
         return 5;
     }
+
+    static GetServiceReasonString(status: number): string {
+      if (status == 0)
+        return ServiceReason.None;
+      else if (status == 1)
+        return ServiceReason.WaterDamage;
+      else if (status == 2)
+        return ServiceReason.ElectricalIssue;
+      else if (status == 3)
+        return ServiceReason.Damaged;
+      else if (status == 4)
+        return ServiceReason.Other;
+      else if (status == 5)
+        return ServiceReason.Unknown;
+    }
+
+    static GetServiceReasonNumber(status: string): number {
+      if (status == ServiceReason.None)
+        return 0;
+      else if (status == ServiceReason.WaterDamage)
+        return 1;
+      else if (status == ServiceReason.ElectricalIssue)
+        return 2;
+      else if (status == ServiceReason.Damaged)
+        return 3;
+      else if (status == ServiceReason.Other)
+        return 4;
+      else if (status == ServiceReason.Unknown)
+        return 5;
+    }
   }
 
   export enum OrderStatus {
@@ -263,7 +293,17 @@ export class OrderInfo {
     InTransit = "In Transit",
     Delivered = "Delivered",
     ServiceRequested = "Service Requested"
-  }
+}
+
+export enum ServiceReason {
+  None = "None",
+  WaterDamage = "Water Damage",
+  ElectricalIssue = "Electrical Issue",
+  Damaged = "Damaged",
+  Other = "Other",
+  Unknown = "Unknown"
+}
+
 
   export class RandomNums {
     static getRandomInt(min, max) {

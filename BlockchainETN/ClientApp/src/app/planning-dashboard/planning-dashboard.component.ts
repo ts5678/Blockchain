@@ -17,7 +17,7 @@ import {Web3Service} from '../services/web3.service'
   styleUrls: ["./planning-dashboard.component.css"]
 })
 export class PlanningDashboardComponent {
-  private TheHttp: Http | null;
+
   public loading: boolean = false;
 
   public sorting  = [{
@@ -50,31 +50,24 @@ export class PlanningDashboardComponent {
       width: 30
     },
     { name: "Order ID", prop: "OrderID" },
-    { name: "Order Name", prop: "OrderName" },
+    { name: "Order Name", prop: "OrderName", maxWidth:"130" },
     { name: "Order Created", prop: "SubmissionDate" },
-    { name: "Estimated ReceptionDate", prop: "EstimatedDate" },
-    { name: "Status", prop: "Status" },
-    { name: "Customer Name", prop: "CustomerName" }
+    { name: "Estimated Reception Date", prop: "EstimatedDate" },
+    { name: "Status", prop: "Status", maxWidth: "130" },
+    { name: "Customer Name", prop: "CustomerName", minWidth:"350" }
   ];
 
   private getTransactionsURL: string;
 
-  constructor(
-    http: Http,
-    @Inject("BASE_URL") baseUrl: string,
+  constructor(http: Http, @Inject("BASE_URL") baseUrl: string,
     private OSService: OrderSystemService,
     private web3service: Web3Service,
-    private toastr : ToastrService
-  ) {
-    this.getTransactionsURL = baseUrl + "api/data/GetTransactions";
-    this.TheHttp = http;
-
-    // this.OSService.transSubject.subscribe({next : (result)=> {console.log(result); console.log(`transaction updates`)}});
+    private toastr: ToastrService
+  )
+  {
 
     this.SelectedTimespan = this.Timespans[0];
     console.log(`constructor for planning dash fired`)
-
-
   }
 
 
@@ -109,12 +102,13 @@ export class PlanningDashboardComponent {
             if(this.OSService.transInitialLoadComplete && row.Status !== result.OrderStatus)
               this.toastr.warning(`${row.OrderName} has been changed`,"Orders updated");
 
-            row.Status = result.OrderStatus
-            existingOrders.push(row.OrderID)
+            row.Status = result.OrderStatus;
+            existingOrders.push(row.OrderID);
            
-          }});
-        
-        if(existingOrders.indexOf(result.OrderID) === -1){
+          }
+        });
+
+        if (existingOrders.indexOf(result.OrderID) === -1 && SharedFunctions.GetOrderStatusNumber(result.OrderStatus) == 0) {
          this.rows.push({
           SubmissionDate: result.OrderDate.toISOString(),
           EstimatedDate : result.OrderEstDate.toISOString(),
@@ -154,87 +148,80 @@ export class PlanningDashboardComponent {
 
 
 async changeStatus(){
- // await this.OSService.getAllOrders();
-   
 
-  this.selected.map((row)=>{
+  this.selected.map((row) => {
     let orderId = row.OrderID;
-    if(SharedFunctions.GetOrderStatusNumber(row.Status) > 0){
-      this.toastr.error(`Order ${row.OrderName} has been already Acknowleged`,'Error');
-    }else{
-    this.OSService.updateStatus(orderId, SharedFunctions.GetOrderStatusNumber(row.Status)+1, {
-      from: this.web3service.web3.eth.accounts[0]
-    })
-    .on('transactionHash',(transactionHash)=>{
-      console.log('transactions');
-    })
-    .on('receipt', async (receipt)=>{
-      console.log(`Update status successful. Got the Receipt.`);
-      console.log(receipt);
-      if(receipt){
-        await this.OSService.getAllOrders();
-      }
-    })
-    .on('error', console.error )
-  }
+    if (SharedFunctions.GetOrderStatusNumber(row.Status) > 0) {
+      this.toastr.error(`Order ${row.OrderName} has been already Acknowleged`, 'Error');
+    }
+    else {
+      this.OSService.updateStatus(orderId, SharedFunctions.GetOrderStatusNumber(row.Status) + 1, {
+        from: this.web3service.web3.eth.accounts[0]
+      })
+        .on('transactionHash', (transactionHash) => {
+          console.log('transactions');
+        })
+        .on('receipt', async (receipt) => {
+          console.log(`Update status successful. Got the Receipt.`);
+          console.log(receipt);
+          if (receipt) {
+            await this.OSService.getAllOrders();
+          }
+        })
+        .on('error', console.error)
+    }
   })
 }
   async GetTransactions() {
     await this.OSService.getAllOrders();
-
-    // await this.OSService.getTransactions();
-    // this.OSService.transactions.subscribe(result => {
-    //   console.log(result);
-    //   console.log(`transaction updates`);
-    // });
   }
 
 
-  public GsetTransactions() {
-    this.loading = true;
+  //public GsetTransactions() {
+  //  this.loading = true;
 
-    let ethJson = {};
-    ethJson["time"] = this.SelectedTimespan.id;
-    this.rows = [];
-    console.log(`Sent request for Getting the transactions `);
-    this.TheHttp.post(this.getTransactionsURL, ethJson).subscribe(
-      result => {
-        debugger;
-        this.loading = false;
-        console.log(`Got the result of search!`);
-        console.log(result);
-        var ethRows = JSON.parse(result.text());
-        this.rawdataRows = ethRows;
+  //  let ethJson = {};
+  //  ethJson["time"] = this.SelectedTimespan.id;
+  //  this.rows = [];
+  //  console.log(`Sent request for Getting the transactions `);
+  //  this.TheHttp.post(this.getTransactionsURL, ethJson).subscribe(
+  //    result => {
+  //      debugger;
+  //      this.loading = false;
+  //      console.log(`Got the result of search!`);
+  //      console.log(result);
+  //      var ethRows = JSON.parse(result.text());
+  //      this.rawdataRows = ethRows;
 
-        //for (let i = 0; i < ethRows.returnValue1.length; i++)
-        //{
+  //      //for (let i = 0; i < ethRows.returnValue1.length; i++)
+  //      //{
 
-        //  let orderinfo = JSON.parse(ethRows.returnValue5[i]);
+  //      //  let orderinfo = JSON.parse(ethRows.returnValue5[i]);
 
-        //  let ord = new OrderInfo();
-        //  ord.OrderID = ethRows.returnValue1[i];
+  //      //  let ord = new OrderInfo();
+  //      //  ord.OrderID = ethRows.returnValue1[i];
 
-        //  let unixTimestamp = ethRows.returnValue2[i];
-        //  let datePipe = new DatePipe('en-US');
-        //  ord.SubmissionDate = datePipe.transform(unixTimestamp * 1000, 'MM/dd/yyyy')
-        //  //let myFormattedDate = new Date(dateString);
+  //      //  let unixTimestamp = ethRows.returnValue2[i];
+  //      //  let datePipe = new DatePipe('en-US');
+  //      //  ord.SubmissionDate = datePipe.transform(unixTimestamp * 1000, 'MM/dd/yyyy')
+  //      //  //let myFormattedDate = new Date(dateString);
 
-        //  ord.Status = this.GetOrderStatus(ethRows.returnValue4[i]);
-        //  ord.CustomerName = orderinfo.customer.name;
-        //  ord.OrderName = orderinfo.ordername;
+  //      //  ord.Status = this.GetOrderStatus(ethRows.returnValue4[i]);
+  //      //  ord.CustomerName = orderinfo.customer.name;
+  //      //  ord.OrderName = orderinfo.ordername;
 
-        //  this.rows.push(ord);
-        //}
+  //      //  this.rows.push(ord);
+  //      //}
 
-        //this.rows = [...this.rows];
-      },
-      error => {
-        debugger;
-        this.loading = false;
-        console.error(error);
-      }
-    );
-  }
+  //      //this.rows = [...this.rows];
+  //    },
+  //    error => {
+  //      debugger;
+  //      this.loading = false;
+  //      console.error(error);
+  //    }
+  //  );
+  //}
 
   public RunSpinner() {
     this.loading = true;

@@ -17,7 +17,8 @@ import { ManufacturingDashboardComponent } from './manufacturing-dashboard/manuf
 import { Web3Service } from './services/web3.service';
 import { OrderSystemService } from './services/order-system.service';
 import {ToastrModule, ToastrService} from 'ngx-toastr';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ServicesDashboardComponent } from './services-dashboard/services-dashboard.component';
 
 
 
@@ -28,7 +29,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     HomeComponent,
     ConfigureItemComponent,
     PlanningDashboardComponent,
-    ManufacturingDashboardComponent
+    ManufacturingDashboardComponent,
+    ServicesDashboardComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -48,6 +50,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
       { path: 'configure-item', component: ConfigureItemComponent },
       { path: 'planning-dashboard', component: PlanningDashboardComponent },
       { path: 'manufacturing-dashboard', component: ManufacturingDashboardComponent },
+      { path: 'services-dashboard', component: ServicesDashboardComponent },
     ])
   ],
   providers: [InfoShareService,Web3Service,OrderSystemService, ToastrService],

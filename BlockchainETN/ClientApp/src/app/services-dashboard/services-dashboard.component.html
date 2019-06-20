@@ -8,11 +8,7 @@
     </div>
     <div class="card-body">
       <div class="col-sm-12">
-        <label for="timespan">Time Range: </label>
-        <select [(ngModel)]="SelectedTimespan" class="mb-1 mt-2" name="timespan">
-          <option *ngFor="let c of Timespans" [ngValue]="c">{{c.name}}</option>
-        </select>
-        <button class="btn btn-primary" (click)="SearchOrders()">Search</button>
+        <button class="btn btn-primary" (click)="SearchOrders()">Refresh</button>
       </div>
       <div class="col-sm-12">
 
@@ -45,15 +41,15 @@
                        [footerHeight]="50"
                        [rowHeight]="50"
                        [limit]="10">
-          <ngx-datatable-column name="Order Created">
+          <ngx-datatable-column name="Order Name" maxWidth="175">
             <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
               <span (click)="sortFn()">{{column.name}}</span>
             </ng-template>
             <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-              {{row['SubmissionDate']}}
+              {{row['OrderName']}}
             </ng-template>
           </ngx-datatable-column>
-          <ngx-datatable-column name="Order ID">
+          <ngx-datatable-column name="Serial Number" minWidth="330">
             <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
               <span (click)="sort()">{{column.name}}</span>
             </ng-template>
@@ -61,37 +57,36 @@
               {{row['OrderID']}}
             </ng-template>
           </ngx-datatable-column>
-          <ngx-datatable-column name="Order Name" maxWidth="130">
+          <ngx-datatable-column name="Customer Name" minWidth="330">
             <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
               <span (click)="sort()">{{column.name}}</span>
             </ng-template>
             <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-              {{row['OrderName']}}
+              {{row['OrderSubmitter']}}
             </ng-template>
           </ngx-datatable-column>
-          <ngx-datatable-column name="Status" maxWidth="100">
+          <ngx-datatable-column name="Contact Info" minwidth>
             <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
               <span (click)="sort()">{{column.name}}</span>
             </ng-template>
             <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-              {{row['Status']}}
+              {{row['CustomerInfo'].Email}}
             </ng-template>
           </ngx-datatable-column>
-          <ngx-datatable-column name="Customer Name" minWidth="350">
+          <ngx-datatable-column name="Service Reason" maxWidth="100">
             <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
               <span (click)="sort()">{{column.name}}</span>
             </ng-template>
             <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-              {{row['CustomerName']}}
+              {{row['OrderServiceReasonStatus']}}
             </ng-template>
           </ngx-datatable-column>
-          <ngx-datatable-column name="Action">
+          <ngx-datatable-column name="Service Requested Date">
             <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
-              <span>{{column.name}}</span>
+              <span (click)="sort()">{{column.name}}</span>
             </ng-template>
             <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-              <button type="button" [ngClass]="{true : 'btn-success', false: 'btn-primary'} [row['ChangeStatusText'] === completeStatus]"
-                      (click)="SetStatus(row)">{{row['ChangeStatusText']}}</button>
+              {{row['OrderServiceDate']}}
             </ng-template>
           </ngx-datatable-column>
         </ngx-datatable>

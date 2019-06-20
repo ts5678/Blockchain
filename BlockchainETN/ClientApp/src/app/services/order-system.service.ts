@@ -1,5 +1,5 @@
 import { ToastrService } from 'ngx-toastr';
-import { SharedFunctions, OrderStatus } from './../shared-library';
+import { SharedFunctions, OrderStatus, CustomerInfo } from './../shared-library';
 import { Injectable, AnimationKeyframe, EventEmitter } from "@angular/core";
 import { Web3Service } from "./web3.service";
 import { Contract } from "web3-eth-contract";
@@ -70,25 +70,30 @@ export class OrderSystemService {
   handleOrderDetailsEvent = (rawData, eventData, receipt) => {
     let order = new Orders();
     let eventObj = this.Events.ORDER_DETAILS;
-    if (eventData) {
+
+    if (eventData){
       null;
-    } else if (rawData) {
+    }
+    else if (rawData) {
       let resultObj = this.web3Service.web3.eth.abi.decodeParameters(eventObj.typeArray, rawData);
       console.log(eventObj.params);
+
       let idx = eventObj.params.indexOf('orderID');
       order.OrderID = resultObj[idx];
       order.OrderDate = new Date(parseInt(resultObj[eventObj.params.indexOf('SubDate')]));
       order.OrderEstDate = new Date(parseInt(resultObj[eventObj.params.indexOf('EstDate')]));
       order.OrderStatus = SharedFunctions.GetOrderStatusString(resultObj[eventObj.params.indexOf('orderStatus')]);
+
       let orderInfo = resultObj[eventObj.params.indexOf('orderInfo')]
       order.OrderName = JSON.parse(orderInfo)["ordername"];
       order.OrderSubmitter = resultObj[eventObj.params.indexOf('submitter')];
     }
 
+    if(order.OrderStatus !== OrderStatus.OrderReceived)
       this.transSubject.next(order);
-      if(order.OrderStatus !== OrderStatus.OrderReceived)
+    else
       this.manuSubject.next(order);
-    
+
   }
 
 
@@ -231,7 +236,7 @@ export class OrderSystemService {
       gas: 2000000
     };
     return this.OSContract.methods
-      .createOrder(funcParams[0], funcParams[1], funcParams[2])
+      .createOrder(funcParams[0], funcParams[1], funcParams[2], funcParams[3])
       .send(localParams);
     // debugger;
     // try {
@@ -332,9 +337,12 @@ export class OrderSystemService {
       await delay;
       return await this.getAllOrders();
     }
+
     let resultObj = await this.OSContract.methods.getAllOrders().call();
+
     let order = new Orders();
     let orderNums = resultObj[0].length
+
     for (let counter = 0; counter < orderNums; counter++) {
       order.OrderID = resultObj[0][counter];
       order.OrderDate = new Date(parseInt(resultObj[1][counter]) * 1000);
@@ -349,6 +357,45 @@ export class OrderSystemService {
       if (order.OrderStatus !== OrderStatus.OrderReceived)
         this.manuSubject.next(order);
 
+    }
+
+    this.transInitialLoadComplete = true;
+    this.manuInitialLoadComplete = true;
+  }
+
+  async getAllWarrantyOrders() {
+    if (!this.OSContract) {
+      const delay = new Promise(resolve => setTimeout(resolve, 100));
+      await delay;
+      return await this.getAllWarrantyOrders();
+    }
+
+    let resultObj = await this.OSContract.methods.getAllWarrantyOrders().call();
+
+    let order = new Orders();
+    let orderNums = resultObj[0].length;
+
+    for (let counter = 0; counter < orderNums; counter++) {
+      let ordid = resultObj[0][counter];
+      if (ordid.length > 0) {
+        order.OrderID = resultObj[0][counter];
+        order.OrderDate = new Date(parseInt(resultObj[1][counter]) * 1000);
+        let servicedate = resultObj[2][counter];
+        if (servicedate != "0")
+          order.OrderServiceDate = new Date(parseInt(servicedate) * 1000);
+        order.OrderStatus = SharedFunctions.GetOrderStatusString(resultObj[3][counter]);
+        let orderInfo = resultObj[4][counter];
+        let parsedJson = JSON.parse(orderInfo);
+        order.OrderName = parsedJson["ordername"];
+        order.CustomerInfo = CustomerInfo.fromJson(parsedJson['customer']);
+
+        order.OrderSubmitter = resultObj[5][counter];
+        order.OrderServiceReasonStatus = SharedFunctions.GetServiceReasonString(resultObj[6][counter]);
+
+        this.transSubject.next(order);
+        if (order.OrderStatus !== OrderStatus.OrderReceived)
+          this.manuSubject.next(order);
+      }
     }
 
     this.transInitialLoadComplete = true;

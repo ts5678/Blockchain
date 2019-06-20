@@ -216,7 +216,8 @@ export class ConfigureItemComponent {
       this.BillingAddress.StateProvince = this.ShippingAddress.StateProvince;
       this.BillingAddress.ZipPostalCode = this.ShippingAddress.ZipPostalCode;
       this.BillingAddress.Country = this.ShippingAddress.Country;
-    } else {
+    }
+    else {
       this.BillingAddress.SendTo = "";
       this.BillingAddress.Street = "";
       this.BillingAddress.City = "";
@@ -279,7 +280,9 @@ export class ConfigureItemComponent {
     ethJson["customer"] = this.infoShareService.Customer.toJsonFriendly();
 
     ethJson["warranty"] = this.OrderWarranty.id;
-    if (this.NeedBattery) ethJson["battery"] = this.OrderBattery.id;
+    let haswarranty = this.OrderWarranty.id > 0;
+    if (this.NeedBattery)
+      ethJson["battery"] = this.OrderBattery.id;
     ethJson["networkcard"] = this.OrderNetworkCard;
 
 
@@ -287,7 +290,7 @@ export class ConfigureItemComponent {
 
     this.theJson = JSON.stringify(ethJson);
 
-    this.OSService.createOrder([ethJson['serial'], JSON.stringify(ethJson), this.web3service.accounts[0]], {
+    this.OSService.createOrder([ethJson['serial'], JSON.stringify(ethJson), this.web3service.accounts[0], haswarranty], {
       from: this.web3service.web3.eth.accounts[0]
     })
       .on("transactionHash", hash => {
@@ -300,7 +303,7 @@ export class ConfigureItemComponent {
         console.log(`Confirmation Number ${confirmationNumber}`);
         if(confirmationNumber == 0){
           console.log(`First Confirmation`);
-          this.toastr.success(`Order confirmed. You will notified for each step of the order.`, 'Confirmation', {
+          this.toastr.success(`Order confirmed. You will notified for each step of the order. Redirecting to root...`, 'Confirmation', {
             timeOut: 4000
           });
           this.router.navigateByUrl("/");

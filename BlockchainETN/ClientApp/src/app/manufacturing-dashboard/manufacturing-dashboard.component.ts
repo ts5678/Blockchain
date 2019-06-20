@@ -53,12 +53,11 @@ export class ManufacturingDashboardComponent {
 
     this.SelectedTimespan = this.Timespans[0];
 
-   // this.GetOrders();
     console.log(this.web3Service.web3);
   }
 
   public SearchOrders() {
-    this.GetOrders();
+    this.OSService.getAllOrders();
   }
 
   ngOnInit(){

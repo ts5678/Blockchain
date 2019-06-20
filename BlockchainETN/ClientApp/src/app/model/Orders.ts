@@ -1,14 +1,18 @@
-export class Orders{
-    public OrderDate : Date ;
-    public OrderID :  string;
-    public OrderName :  string;
-    public OrderEstDate : Date;
-    public OrderStatus : string;
-    public OrderSubmitter : string
-    constructor(){
-        this.OrderDate = new Date()
-        this.OrderEstDate = new Date()
-        this.OrderStatus = "Pending"
-    }
-    
+import { CustomerInfo } from "../shared-library";
+
+export class Orders {
+  public OrderDate: Date;
+  public OrderID: string;
+  public OrderName: string;
+  public OrderEstDate: Date;
+  public OrderStatus: string;
+  public OrderSubmitter: string;
+  public OrderServiceDate: Date;
+  public OrderServiceReasonStatus: string;
+  public CustomerInfo: CustomerInfo;
+
+  constructor() {
+    this.OrderStatus = "Pending";
+  }
+
 }

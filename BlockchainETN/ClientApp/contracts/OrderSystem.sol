@@ -1,15 +1,10 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-
-import "./DateTime.sol";
-
-
 contract OrderSystem {
 
-    DateTime dateTime = new DateTime();
-
     enum OrderStatusEnum { OrderReceived , BeingBuilt, PreparedForShipping, InTransit, ShippingComplete,ServiceRequested }
+    enum ServiceReasonEnum { None, WaterDamage , ElectricalIssue, Damaged, Other, Unknown}
 
     struct Order {
         string OrderID;
@@ -18,6 +13,9 @@ contract OrderSystem {
         OrderStatusEnum OrderStatus;
         string OrderInfo;
         string submitter;
+        bool HasWarranty;
+        uint ServiceRequestDate;
+        ServiceReasonEnum ServiceStatus;
     }
 
     mapping (string => Order) Orders;
@@ -52,8 +50,8 @@ contract OrderSystem {
     //     return string(bstr);
     // }
 
-    function createOrder(string memory orderid, string memory orderinfo, string memory submitter) public returns (string memory) {
-        uint twoWeeksFromNow = now + (86400 * 14);
+    function createOrder(string memory orderid, string memory orderinfo, string memory submitter, bool hasWarranty) public returns (string memory) {
+        uint twoWeeksFromNow = now + (86400 * 14);//today plus 14 days
 
         Order memory existCheck = Orders[orderid];
         if(compareStrings(existCheck.OrderID, ""))
@@ -61,9 +59,10 @@ contract OrderSystem {
 
         emit CreateOrderMsg("createOrder orderid:", orderid);
         emit CreateOrderMsg("submitter:", submitter);
-        emit ORDER_DETAILS(orderid, now, twoWeeksFromNow, uint(OrderStatusEnum.OrderReceived), orderinfo, submitter); 
+        emit ORDER_DETAILS(orderid, now, twoWeeksFromNow, uint(OrderStatusEnum.OrderReceived), orderinfo, submitter);
 
-        Orders[orderid] = Order(orderid, now, twoWeeksFromNow, OrderStatusEnum.OrderReceived, orderinfo, submitter);
+        Orders[orderid] = Order(orderid, now, twoWeeksFromNow, OrderStatusEnum.OrderReceived, orderinfo, submitter,
+                                        hasWarranty, 0, ServiceReasonEnum.None);
 
         return orderid;
     }
@@ -75,9 +74,12 @@ contract OrderSystem {
             return false;
 
       //  emit ChangeStatus(orderid, newstatus);
-        emit ORDER_DETAILS(orderid, existingOrder.SubmissionDate, existingOrder.EstimatedReceptionDate, uint(OrderStatusEnum(newstatus)), existingOrder.OrderInfo, existingOrder.submitter);
+        emit ORDER_DETAILS(orderid, existingOrder.SubmissionDate, existingOrder.EstimatedReceptionDate,
+                                    uint(OrderStatusEnum(newstatus)), existingOrder.OrderInfo, existingOrder.submitter);
 
-        Orders[orderid] = Order(orderid, existingOrder.SubmissionDate, existingOrder.EstimatedReceptionDate, OrderStatusEnum(newstatus), existingOrder.OrderInfo, existingOrder.submitter);
+        Orders[orderid] = Order(orderid, existingOrder.SubmissionDate, existingOrder.EstimatedReceptionDate,
+                                    OrderStatusEnum(newstatus), existingOrder.OrderInfo, existingOrder.submitter,
+                                    existingOrder.HasWarranty,existingOrder.ServiceRequestDate, existingOrder.ServiceStatus);
 
         return true;
     }
@@ -136,6 +138,37 @@ contract OrderSystem {
             submitters[i] = ord.submitter;
         }
         return (orderids,submissiondates,estimateddates,statuses,orderinfos, submitters);
+    }
+
+    function getAllWarrantyOrders() public view
+            returns (string[] memory,uint[] memory,uint[] memory, uint[] memory,string[] memory, string[] memory,
+                uint[] memory){
+
+        //emit GetAllOrdersMsg("getAllOrders");
+
+        Order memory ord;
+        string[] memory orderids = new string[](OrderIds.length);
+        uint[] memory submissiondates = new uint[](OrderIds.length);
+        uint[] memory statuses = new uint[](OrderIds.length);
+        string[] memory orderinfos = new string[](OrderIds.length);
+        string[] memory submitters = new string[](OrderIds.length);
+        uint[] memory servicedates = new uint[](OrderIds.length);
+        uint[] memory servicestatuses = new uint[](OrderIds.length);
+
+        for(uint i = 0;i < OrderIds.length; i++)
+        {
+            ord = Orders[OrderIds[i]];
+            if(ord.HasWarranty){
+                orderids[i] = ord.OrderID;
+                submissiondates[i] = ord.SubmissionDate;
+                servicedates[i] = ord.ServiceRequestDate;
+                statuses[i] = uint(ord.OrderStatus);
+                orderinfos[i] = ord.OrderInfo;
+                submitters[i] = ord.submitter;
+                servicestatuses[i] = uint(ord.ServiceStatus);
+            }
+        }
+        return (orderids,submissiondates,servicedates,statuses,orderinfos, submitters,servicestatuses);
     }
 
     function getOrderInfo(string memory orderid) public view returns (string memory, string memory, uint, uint, OrderStatusEnum){

@@ -7,7 +7,7 @@
 
 
 
-.datatable-body-cell-label{
+/*.datatable-body-cell-label{
   display:flex;
   justify-content: center;
   word-wrap: break-word;
@@ -41,6 +41,13 @@
   border: 2px solid grey
 }
 
+.datatable-header-cell {
+  display: flex !important;
+  align-items: center !important;
+}*/
+
 #toast-container > div {
   opacity:0.8;
 }
+
+
