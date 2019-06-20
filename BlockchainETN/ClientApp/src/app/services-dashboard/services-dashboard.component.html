@@ -3,7 +3,7 @@
 <div class='container-fluid'>
   <div class='row border card'>
     <div class="card-header">
-      Asset Activity
+      Services Dashboard
       <!--<button class="btn btn-primary" (click)="RunSpinner()">Click to spin</button>-->
     </div>
     <div class="card-body">
@@ -30,7 +30,13 @@
   </div>
   <div class='row border card'>
     <div class="card-header">
-      Details
+      <div class="btn-group">
+
+        <button name="options" id="option1" (click)="AllWarranty=true;FilterOrders()"
+                 [ngClass]="AllWarranty === true ? 'btn-primary' : 'btn-secondary'"> All Warranty Orders</button>
+        <button name="options" id="option2" (click)="AllWarranty=false;FilterOrders()"
+                 [ngClass]="AllWarranty === false ? 'btn-primary' : 'btn-secondary'"> Service Requested Orders</button>
+      </div>
     </div>
     <div class="card-body">
       <div class="col-sm-12">
@@ -65,7 +71,7 @@
               {{row['OrderSubmitter']}}
             </ng-template>
           </ngx-datatable-column>
-          <ngx-datatable-column name="Contact Info" minwidth>
+          <ngx-datatable-column name="Contact Info" maxWidth="130">
             <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
               <span (click)="sort()">{{column.name}}</span>
             </ng-template>

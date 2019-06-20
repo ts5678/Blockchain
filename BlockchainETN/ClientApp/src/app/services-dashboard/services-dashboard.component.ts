@@ -20,19 +20,12 @@ export class ServicesDashboardComponent {
 
   public loading: boolean = false;
 
-  public ShowTotals: boolean = false;
+  public AllWarranty: boolean = true;
 
 
   public rows = [];
-  public rawdataRows = [];
+  public allrows = [];
 
-  public columns = [
-    { name: "Order Name", prop: "OrderName" },
-    { name: "Serial Number", prop: 'OrderID' },
-    { name: "Customer Name", prop: 'OrderSubmitter' },
-    { name: "Contact Info", prop: 'CustomerInfo.Email' },
-    { name: "Service Requested Date", prop: 'OrderServiceDate' },
-  ];
  
   private completeStatus : string = 'Order Fulfilled';
 
@@ -42,6 +35,15 @@ export class ServicesDashboardComponent {
 
   public SearchOrders() {
     this.OSService.getAllWarrantyOrders();
+  }
+
+  public FilterOrders() {
+
+    if (this.AllWarranty)
+      this.rows = [...this.allrows];
+    else
+      this.rows = [...this.allrows.filter(row => SharedFunctions.GetServiceReasonNumber(row.OrderServiceReasonStatus) > 0)];
+
   }
 
   ngOnInit(){
@@ -80,7 +82,8 @@ export class ServicesDashboardComponent {
       
         console.log(this.rows.length);
         this.loading = false;
-        this.rows =[...this.rows]
+        this.rows = [...this.rows];
+        this.allrows = this.rows;
         
       }
     });
