@@ -147,81 +147,36 @@ export class PlanningDashboardComponent {
   }
 
 
-async changeStatus(){
+  async changeStatus() {
 
-  this.selected.map((row) => {
-    let orderId = row.OrderID;
-    if (SharedFunctions.GetOrderStatusNumber(row.Status) > 0) {
-      this.toastr.error(`Order ${row.OrderName} has been already Acknowleged`, 'Error');
-    }
-    else {
-      this.OSService.updateStatus(orderId, SharedFunctions.GetOrderStatusNumber(row.Status) + 1, {
-        from: this.web3service.web3.eth.accounts[0]
-      })
-        .on('transactionHash', (transactionHash) => {
-          console.log('transactions');
+    this.selected.map((row) => {
+      let orderId = row.OrderID;
+      if (SharedFunctions.GetOrderStatusNumber(row.Status) > 0) {
+        this.toastr.error(`Order ${row.OrderName} has been already Acknowleged`, 'Error');
+      }
+      else {
+        this.OSService.updateStatus(orderId, SharedFunctions.GetOrderStatusNumber(row.Status) + 1, {
+          from: this.web3service.web3.eth.accounts[0]
         })
-        .on('receipt', async (receipt) => {
-          console.log(`Update status successful. Got the Receipt.`);
-          console.log(receipt);
-          if (receipt) {
-            await this.OSService.getAllOrders();
-          }
-        })
-        .on('error', console.error)
-    }
-  })
-}
-  async GetTransactions() {
-    await this.OSService.getAllOrders();
+          .on('transactionHash', (transactionHash) => {
+            console.log('transactions');
+          })
+          .on('receipt', async (receipt) => {
+            console.log(`Update status successful. Got the Receipt.`);
+            console.log(receipt);
+            if (receipt) {
+              await this.OSService.getAllOrders();
+            }
+          })
+          .on('error', console.error)
+      }
+    });
   }
 
 
-  //public GsetTransactions() {
-  //  this.loading = true;
-
-  //  let ethJson = {};
-  //  ethJson["time"] = this.SelectedTimespan.id;
-  //  this.rows = [];
-  //  console.log(`Sent request for Getting the transactions `);
-  //  this.TheHttp.post(this.getTransactionsURL, ethJson).subscribe(
-  //    result => {
-  //      debugger;
-  //      this.loading = false;
-  //      console.log(`Got the result of search!`);
-  //      console.log(result);
-  //      var ethRows = JSON.parse(result.text());
-  //      this.rawdataRows = ethRows;
-
-  //      //for (let i = 0; i < ethRows.returnValue1.length; i++)
-  //      //{
-
-  //      //  let orderinfo = JSON.parse(ethRows.returnValue5[i]);
-
-  //      //  let ord = new OrderInfo();
-  //      //  ord.OrderID = ethRows.returnValue1[i];
-
-  //      //  let unixTimestamp = ethRows.returnValue2[i];
-  //      //  let datePipe = new DatePipe('en-US');
-  //      //  ord.SubmissionDate = datePipe.transform(unixTimestamp * 1000, 'MM/dd/yyyy')
-  //      //  //let myFormattedDate = new Date(dateString);
-
-  //      //  ord.Status = this.GetOrderStatus(ethRows.returnValue4[i]);
-  //      //  ord.CustomerName = orderinfo.customer.name;
-  //      //  ord.OrderName = orderinfo.ordername;
-
-  //      //  this.rows.push(ord);
-  //      //}
-
-  //      //this.rows = [...this.rows];
-  //    },
-  //    error => {
-  //      debugger;
-  //      this.loading = false;
-  //      console.error(error);
-  //    }
-  //  );
-  //}
+  async GetTransactions() {
+    await this.OSService.getAllOrders();
+  }
 
   public RunSpinner() {
     this.loading = true;

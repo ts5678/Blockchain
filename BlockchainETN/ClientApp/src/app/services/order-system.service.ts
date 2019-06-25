@@ -59,9 +59,9 @@ export class OrderSystemService {
     }
 
     this.transSubject.next(order);
-    if(order.OrderStatus !== OrderStatus.OrderReceived)
-    this.manuSubject.next(order);
-  
+    if (order.OrderStatus !== OrderStatus.OrderReceived)
+      this.manuSubject.next(order);
+
 
 
   }
@@ -71,7 +71,7 @@ export class OrderSystemService {
     let order = new Orders();
     let eventObj = this.Events.ORDER_DETAILS;
 
-    if (eventData){
+    if (eventData) {
       null;
     }
     else if (rawData) {
@@ -89,7 +89,7 @@ export class OrderSystemService {
       order.OrderSubmitter = resultObj[eventObj.params.indexOf('submitter')];
     }
 
-    if(order.OrderStatus !== OrderStatus.OrderReceived)
+    if (order.OrderStatus !== OrderStatus.OrderReceived)
       this.transSubject.next(order);
     else
       this.manuSubject.next(order);
@@ -133,7 +133,7 @@ export class OrderSystemService {
 
 
 
-  constructor(private web3Service: Web3Service, private toastr : ToastrService) {
+  constructor(private web3Service: Web3Service, private toastr: ToastrService) {
 
     this.handleCreateEvent = this.handleCreateEvent.bind(this);
     this.eventHandler = this.eventHandler.bind(this);
@@ -180,7 +180,7 @@ export class OrderSystemService {
         let receipt = await this.web3Service.web3.eth.getTransactionReceipt(event.transactionHash)
         if (event.event === 'CREATE_ORDER') {
           this.handleCreateEvent(event.raw.data, "", receipt);
-        }else if (event.event == this.Events.ORDER_DETAILS.name) {
+        } else if (event.event == this.Events.ORDER_DETAILS.name) {
           this.handleOrderDetailsEvent(event.raw.data, "", receipt)
         }
       })
@@ -263,7 +263,15 @@ export class OrderSystemService {
       from: this.web3Service.accounts[0],
       gas: 2000000
     };
-    return this.OSContract.methods.changeStatus(orderID, newStatus).send(localParams)
+    return this.OSContract.methods.changeStatus(orderID, newStatus).send(localParams);
+  }
+
+  updateServiceStatus(orderID, newStatus, sendParams) {
+    let localParams: object = {
+      from: this.web3Service.accounts[0],
+      gas: 2000000
+    };
+    return this.OSContract.methods.changeServiceStatus(orderID, newStatus).send(localParams);
   }
 
   decodeReceipt(receipt) {

@@ -11,16 +11,16 @@ import { OrderSystemService } from '../services/order-system.service';
 })
 export class HomeComponent {
 
-  private TheHttp : Http | null;
+  private TheHttp: Http | null;
   public Customer: CustomerInfo | null;
   public OrderName: string | null;
-  public OSContract :  any;
+  public OSContract: any;
 
   constructor(http: Http, @Inject('BASE_URL') baseUrl: string, private infoShareService: InfoShareService, private OSService: OrderSystemService) {
     this.TheHttp = http;
     this.Customer = new CustomerInfo();
     this.OSContract = OSService.setContract();
-  
+
   }
 
   public BeginOrder() {
@@ -28,10 +28,10 @@ export class HomeComponent {
     this.infoShareService.OrderName = this.OrderName;
   }
 
-  public FillCustomer(){
+  public FillCustomer() {
 
     let one = new CustomerInfo();
-    one.Name ="Vandelay Industries";
+    one.Name = "Vandelay Industries";
     one.Email = "sales@vandelay.com";
     one.Phone = "4128556767";
 

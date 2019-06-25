@@ -103,7 +103,7 @@ export class ConfigureItemComponent {
     private web3service: Web3Service,
     private OSService: OrderSystemService,
     private toastr: ToastrService,
-    private router : Router
+    private router: Router
   ) {
     this.createOrderURL = baseUrl + "api/data/createOrder";
     this.TheHttp = http;
@@ -301,40 +301,18 @@ export class ConfigureItemComponent {
       })
       .on("confirmation", (confirmationNumber, receipt) => {
         console.log(`Confirmation Number ${confirmationNumber}`);
-        if(confirmationNumber == 0){
+        if (confirmationNumber == 0) {
           console.log(`First Confirmation`);
           this.toastr.success(`Order confirmed. You will notified for each step of the order. Redirecting to root...`, 'Confirmation', {
-            timeOut: 4000
+            timeOut: 8000
           });
           this.router.navigateByUrl("/");
-                  //   console.log(`receipt hash : ${receipt} . now emitting event`);
-        //   console.log(receipt);
-        //   let orderData = new Orders();
-        //   console.log('CREATE_ORDER' in receipt.events);
-        //   if ('events' in receipt) {
-        //     console.log('Events in receipt')
-        //     // if ('CREATE_ORDER' in receipt.events) {
-        //     //   let eventRawData = receipt.events[this.OSService.Events.CREATE_ORDER.name].raw.data;
-        //     //   this.OSService.handleCreateEvent(eventRawData, null, receipt);
-        //     // } else if (this.OSService.Events.ORDER_DETAILS.name in receipt.events) {
-        //     //   let eventRawData = receipt.events[this.OSService.Events.CREATE_ORDER.name].raw.data;
-        //     //   this.OSService.handleOrderDetailsEvent(eventRawData, null, receipt);
-        //     // }
-        //   }
-        // }
-      
-      }})
+
+        }
+      })
       .on('receipt', (receipt) => {
-        
+
       })
       .on('error', console.error);
-    ;
-    // this.TheHttp.post(this.createOrderURL, ethJson).subscribe(result => {
-    //   var asdf = result;
-    //   this.OrderConfirmed = true;
-    //   console.log("Order has been confirmed. ! with Receipt and Transaction hash ")
-    // }, error => console.error(error));
-
-    //http.post(this._creatPOUrl, product, options)
   }
 }

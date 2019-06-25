@@ -4,7 +4,7 @@ import { NgxLoadingModule } from 'ngx-loading';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { TableColumn, ColumnMode } from '@swimlane/ngx-datatable';
 
-import { OrderInfo, Guid, OrderStatus, SharedFunctions } from '../shared-library';
+import { OrderInfo, Guid, OrderStatus, SharedFunctions, RandomNums } from '../shared-library';
 import { OrderSystemService } from "../services/order-system.service";
 import { Web3Service } from '../services/web3.service';
 import { ToastrService } from 'ngx-toastr';
@@ -26,10 +26,11 @@ export class ServicesDashboardComponent {
   public rows = [];
   public allrows = [];
 
- 
-  private completeStatus : string = 'Order Fulfilled';
 
-  constructor(http: Http, @Inject('BASE_URL') baseUrl: string, private web3Service: Web3Service, private OSService : OrderSystemService, private toastr : ToastrService) {
+  private completeStatus: string = 'Order Fulfilled';
+  public ShowRandomServiceIssue: boolean = false;
+
+  constructor(http: Http, @Inject('BASE_URL') baseUrl: string, private web3Service: Web3Service, private OSService: OrderSystemService, private toastr: ToastrService) {
     console.log(this.web3Service.web3);
   }
 
@@ -46,7 +47,7 @@ export class ServicesDashboardComponent {
 
   }
 
-  ngOnInit(){
+  ngOnInit() {
     console.log(`services dashboard initiated.`);
     this.loading = true;
     this.OSService.manuInitialLoadComplete = false;
@@ -59,49 +60,64 @@ export class ServicesDashboardComponent {
         //search in rows if oreader is already there.
 
         let existingOrders = [];
-         
-  
-        this.rows.map((row)=>{
-          if(result.OrderID === row.OrderID){
+
+
+        this.rows.map((row) => {
+          if (result.OrderID === row.OrderID) {
             //order already in thr row.. just update it.
 
-            if(this.OSService.manuInitialLoadComplete && row.Status !== result.OrderStatus)
-            this.toastr.warning(`${row.OrderName} has been changed`,"Orders updated");
+            if (this.OSService.manuInitialLoadComplete && row.Status !== result.OrderStatus)
+              this.toastr.warning(`${row.OrderName} has been changed`, "Orders updated");
 
             row.Status = result.OrderStatus;
-            row.ChangeStatusText = this.GetChangeStatusText(SharedFunctions.GetOrderStatusString((SharedFunctions.GetOrderStatusNumber(row.Status))));
+            //row.ChangeStatusText = this.GetChangeStatusText(SharedFunctions.GetOrderStatusString((SharedFunctions.GetOrderStatusNumber(row.Status))));
             existingOrders.push(row.OrderID);
-          }});
-        
-        if(existingOrders.indexOf(result.OrderID) === -1){
+          }
+        });
+
+        if (existingOrders.indexOf(result.OrderID) === -1) {
           this.rows.push(result);
 
-        if(this.OSService.transInitialLoadComplete)
-          this.toastr.success(`${result.OrderName} has been added`,"Orders Added");
-      };
-      
+          if (this.OSService.transInitialLoadComplete)
+            this.toastr.success(`${result.OrderName} has been added`, "Orders Added");
+        };
+
         console.log(this.rows.length);
         this.loading = false;
         this.rows = [...this.rows];
         this.allrows = this.rows;
-        
+
       }
     });
     console.log(`Length is  : ${this.rows.length}`);
     this.OSService.getAllWarrantyOrders();
   }
 
-  public GetChangeStatusText(status) {
-    if (OrderStatus.OrderReceived == status)
-      return "Start building...";
-    else if (OrderStatus.BeingBuilt == status)
-      return "Finish production...";
-    else if (OrderStatus.ReadyToShip == status)
-      return "Ship to customer...";
-    else if (OrderStatus.InTransit == status)
-      return "Complete delivery...";
-    else
-      return this.completeStatus;
+  public ToggleCreateRandomServiceIssue() {
+
+    this.ShowRandomServiceIssue = !this.ShowRandomServiceIssue;
+
+  }
+
+  public CreateRandomServiceIssue(row) {
+
+    this.loading = true;
+
+    let ethJson = {};
+    ethJson['orderid'] = row.OrderID;
+    ethJson['status'] = SharedFunctions.GetServiceReasonNumber(row.OrderServiceReasonStatus) + RandomNums.getRandomInt(1, 5);
+
+    this.OSService.updateServiceStatus(ethJson['orderid'], ethJson['status'], {
+      from: this.web3Service.web3.eth.accounts[0]
+    })
+      .on('transactionHash', (transactionHash) => {
+        this.toastr.info(`Service Status Update Requested`);
+      })
+      .on('receipt', (receipt) => {
+        console.log(`Service Status Changed`);
+        this.loading = false;
+      });
+
   }
 
   public RunSpinner() {

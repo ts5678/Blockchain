@@ -36,21 +36,17 @@ export class ManufacturingDashboardComponent {
     { name: "Order Name", prop: 'OrderName' },
     { name: "Status", prop: 'Status' },
     { name: "Customer Name", prop: 'CustomerName' },
-    { name: "Action"} 
+    { name: "Action" }
   ];
 
 
 
   private getOrdersURL: string;
   private changeStatusURL: string;
-  
-  private completeStatus : string = 'Order Fulfilled';
 
-  constructor(http: Http, @Inject('BASE_URL') baseUrl: string, private web3Service: Web3Service, private OSService : OrderSystemService, private toastr : ToastrService) {
-    this.getOrdersURL = baseUrl + 'api/data/getOrders';
-    this.changeStatusURL = baseUrl + 'api/data/changeStatus';
-    this.TheHttp = http;
+  private completeStatus: string = 'Order Fulfilled';
 
+  constructor(http: Http, @Inject('BASE_URL') baseUrl: string, private web3Service: Web3Service, private OSService: OrderSystemService, private toastr: ToastrService) {
     this.SelectedTimespan = this.Timespans[0];
 
     console.log(this.web3Service.web3);
@@ -60,7 +56,7 @@ export class ManufacturingDashboardComponent {
     this.OSService.getAllOrders();
   }
 
-  ngOnInit(){
+  ngOnInit() {
     console.log(`Manufacturing dashboard initiated.`);
     this.loading = true;
     this.OSService.manuInitialLoadComplete = false;
@@ -73,89 +69,49 @@ export class ManufacturingDashboardComponent {
         //search in rows if oreader is already there.
 
         let existingOrders = [];
-         
-  
-        this.rows.map((row)=>{
-          if(result.OrderID === row.OrderID){
+
+
+        this.rows.map((row) => {
+          if (result.OrderID === row.OrderID) {
             //order already in thr row.. just update it.
 
-            if(this.OSService.manuInitialLoadComplete && row.Status !== result.OrderStatus)
-            this.toastr.warning(`${row.OrderName} has been changed`,"Orders updated");
+            if (this.OSService.manuInitialLoadComplete && row.Status !== result.OrderStatus)
+              this.toastr.warning(`${row.OrderName} has been changed`, "Orders updated");
 
             row.Status = result.OrderStatus
             row.ChangeStatusText = this.GetChangeStatusText(SharedFunctions.GetOrderStatusString((SharedFunctions.GetOrderStatusNumber(row.Status))))
             existingOrders.push(row.OrderID)
-          }});
-        
-        if(existingOrders.indexOf(result.OrderID) === -1){
-         this.rows.push({
-          SubmissionDate: result.OrderDate.toISOString(),
-          OrderID: result.OrderID,
-          OrderName: result.OrderName,
-          Status: result.OrderStatus,
-          CustomerName: result.OrderSubmitter,
-          ChangeStatusText : this.GetChangeStatusText(SharedFunctions.GetOrderStatusString((SharedFunctions.GetOrderStatusNumber(result.OrderStatus))))
-        })
-        if(this.OSService.transInitialLoadComplete){
-          this.toastr.success(`${result.OrderName} has been added`,"Orders Added");
-        }
-      };
-      
+          }
+        });
+
+        if (existingOrders.indexOf(result.OrderID) === -1) {
+          this.rows.push({
+            SubmissionDate: result.OrderDate.toISOString(),
+            OrderID: result.OrderID,
+            OrderName: result.OrderName,
+            Status: result.OrderStatus,
+            CustomerName: result.OrderSubmitter,
+            ChangeStatusText: this.GetChangeStatusText(SharedFunctions.GetOrderStatusString((SharedFunctions.GetOrderStatusNumber(result.OrderStatus))))
+          })
+          if (this.OSService.transInitialLoadComplete) {
+            this.toastr.success(`${result.OrderName} has been added`, "Orders Added");
+          }
+        };
+
         console.log(this.rows.length);
         this.loading = false;
-        this.rows =[...this.rows]
-        
+        this.rows = [...this.rows]
+
       }
     });
     console.log(`Length is  : ${this.rows.length}`);
     this.OSService.getAllOrders();
   }
 
-
-  public GetOrders() {
-    this.loading = true;
-
-    let ethJson = {};
-    ethJson['time'] = this.SelectedTimespan.id;
-    this.rows = [];
-
-    this.TheHttp.post(this.getOrdersURL, ethJson).subscribe((result) => {
-      this.loading = false;
-      var ethRows = JSON.parse(result.text());
-      this.rawdataRows = ethRows;
-
-      for (let i = 0; i < ethRows.returnValue1.length; i++) {
-
-        let orderinfo = JSON.parse(ethRows.returnValue5[i]);
-
-        let ord = new OrderInfo();
-        ord.OrderID = ethRows.returnValue1[i];
-
-        let unixTimestamp = ethRows.returnValue2[i];
-        let datePipe = new DatePipe('en-US');
-        ord.SubmissionDate = datePipe.transform(unixTimestamp * 1000, 'MM/dd/yyyy')
-        //let myFormattedDate = new Date(dateString);
-        
-        ord.Status = SharedFunctions.GetOrderStatusString(ethRows.returnValue4[i]);
-        ord.CustomerName = orderinfo.customer.name;
-        ord.OrderName = orderinfo.ordername;
-        ord.ChangeStatusText = this.GetChangeStatusText(ord);
-
-        this.rows.push(ord);
-      }
-
-      this.rows = [...this.rows];
-    }
-    , error => {
-        this.loading = false;
-        console.error(error);
-      });
-  }
-
   public SetStatus(row) {
 
     this.loading = true;
-    if(SharedFunctions.GetOrderStatusNumber(row.Status) === 5){
+    if (SharedFunctions.GetOrderStatusNumber(row.Status) === 5) {
       this.loading = false;
       this.toastr.error(`This Order has been fulfilled.`);
       return;
@@ -168,22 +124,13 @@ export class ManufacturingDashboardComponent {
     this.OSService.updateStatus(ethJson['orderid'], ethJson['status'], {
       from: this.web3Service.web3.eth.accounts[0]
     })
-    .on('transactionHash', (transactionHash) => {
-      this.toastr.info(`Status Update Requested`);
-    })
-    .on('receipt',(receipt) => {
-      console.log(`Status Changed`);
-      this.loading= false;
-    })
-
-    // this.loading = true;
-    // this.TheHttp.post(this.changeStatusURL, ethJson).subscribe((result) => {
-    //   this.loading = false;
-
-    // }, error => {
-    //   this.loading = false;
-    //   console.error(error);
-    // });
+      .on('transactionHash', (transactionHash) => {
+        this.toastr.info(`Status Update Requested`);
+      })
+      .on('receipt', (receipt) => {
+        console.log(`Status Changed`);
+        this.loading = false;
+      })
   }
 
   public GetChangeStatusText(status) {

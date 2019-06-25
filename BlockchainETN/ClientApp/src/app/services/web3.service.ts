@@ -1,8 +1,8 @@
-import {Injectable, NgModule} from '@angular/core';
+import { Injectable, NgModule } from '@angular/core';
 import contract from 'truffle-contract';
-import {Subject} from 'rxjs';
+import { Subject } from 'rxjs';
 
-const  Web3 = require('web3');
+const Web3 = require('web3');
 
 
 declare let window: any;
@@ -22,39 +22,40 @@ export class Web3Service {
     });
   }
 
-   public async bootstrapWeb3() {
+  public async bootstrapWeb3() {
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
 
-   if(!this.web3){
-    console.log(`Redefining Web3`);
-    // if(!window.ethereum){
-    //   this.web3 = new Web3(window.ethereum);
-    //   console.log(`In first condition`);
-    //   // try{
-    //   //   //Ask for permission for using metamask.
-    //   //   this.web3 = new Web3(new Web3.providers.WebsocketProvider('ws://127.0.0.1:8545'));
-    //   //   //await window.ethereum.enable();
-       
-    //   // }catch(err){
-    //   //   console.log(err);
-    //   // }
-    // }else 
-    if (typeof window.web3 !== 'undefined') {
-      console.log(`In second condition`);
-      window.ethereum.enable();
+    if (!this.web3) {
+      console.log(`Redefining Web3`);
+      // if(!window.ethereum){
+      //   this.web3 = new Web3(window.ethereum);
+      //   console.log(`In first condition`);
+      //   // try{
+      //   //   //Ask for permission for using metamask.
+      //   //   this.web3 = new Web3(new Web3.providers.WebsocketProvider('ws://127.0.0.1:8545'));
+      //   //   //await window.ethereum.enable();
 
-      // Use Mist/MetaMask's provider
-     // this.web3 = new Web3(new Web3.providers.WebsocketProvider('ws://127.0.0.1:8545'));
-      this.web3 = new Web3(window.web3.currentProvider);
-    } else {
-      console.log('No web3? You should consider trying MetaMask!');
+      //   // }catch(err){
+      //   //   console.log(err);
+      //   // }
+      // }else 
+      if (typeof window.web3 !== 'undefined') {
+        console.log(`In second condition`);
+        window.ethereum.enable();
 
-      // Hack to provide backwards compatibility for Truffle, which uses web3js 0.20.x
-      Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
-      // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-      this.web3 = new Web3(new Web3.providers.WebsocketProvider('ws://127.0.0.1:8545'));
-      
-    }}
+        // Use Mist/MetaMask's provider
+        // this.web3 = new Web3(new Web3.providers.WebsocketProvider('ws://127.0.0.1:8545'));
+        this.web3 = new Web3(window.web3.currentProvider);
+      } else {
+        console.log('No web3? You should consider trying MetaMask!');
+
+        // Hack to provide backwards compatibility for Truffle, which uses web3js 0.20.x
+        Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
+        // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+        this.web3 = new Web3(new Web3.providers.WebsocketProvider('ws://127.0.0.1:8545'));
+
+      }
+    }
 
     setInterval(() => this.refreshAccounts(), 100);
   }

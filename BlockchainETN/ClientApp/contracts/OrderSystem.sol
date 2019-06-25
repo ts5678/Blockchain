@@ -26,6 +26,7 @@ contract OrderSystem {
     event GetOrdersMsg(string msg);
     event GetAllOrdersMsg(string msg);
     event ChangeStatus(string msg, uint enu);
+    event ChangeServiceStatus(string msg, uint enu);
 
     function compareStrings (string memory a, string memory b) public pure returns (bool) {
        return keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b));
@@ -73,13 +74,27 @@ contract OrderSystem {
         if(compareStrings(existingOrder.OrderID, ""))
             return false;
 
-      //  emit ChangeStatus(orderid, newstatus);
         emit ORDER_DETAILS(orderid, existingOrder.SubmissionDate, existingOrder.EstimatedReceptionDate,
                                     uint(OrderStatusEnum(newstatus)), existingOrder.OrderInfo, existingOrder.submitter);
 
         Orders[orderid] = Order(orderid, existingOrder.SubmissionDate, existingOrder.EstimatedReceptionDate,
                                     OrderStatusEnum(newstatus), existingOrder.OrderInfo, existingOrder.submitter,
                                     existingOrder.HasWarranty,existingOrder.ServiceRequestDate, existingOrder.ServiceStatus);
+
+        return true;
+    }
+
+    function changeServiceStatus(string memory orderid, uint newstatus) public returns (bool) {
+
+        Order memory existingOrder = Orders[orderid];
+        if(compareStrings(existingOrder.OrderID, ""))
+            return false;
+
+        emit ChangeServiceStatus(orderid, uint(ServiceReasonEnum(newstatus)));
+
+        Orders[orderid] = Order(orderid, existingOrder.SubmissionDate, existingOrder.EstimatedReceptionDate,
+                                    existingOrder.OrderStatus, existingOrder.OrderInfo, existingOrder.submitter,
+                                    existingOrder.HasWarranty, now, ServiceReasonEnum(existingOrder.ServiceStatus));
 
         return true;
     }
