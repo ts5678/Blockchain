@@ -17,19 +17,6 @@
       </div>
       <div class="col-sm-12">
 
-
-        <!--<div class="col-sm-3">
-
-        </div>
-        <div class="col-sm-3">
-
-        </div>
-        <div class="col-sm-3">
-
-        </div>
-        <div class="col-sm-3">
-
-        </div>-->
       </div>
     </div>
   </div>
@@ -56,7 +43,8 @@
                        [headerHeight]="50"
                        [footerHeight]="50"
                        [rowHeight]="50"
-                       [limit]="10">
+                       [limit]="10"
+                       [scrollbarH]="true">
           <ngx-datatable-column name="Order Name" maxWidth="175">
             <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
               <span (click)="sortFn()">{{column.name}}</span>
@@ -110,7 +98,7 @@
               <span (click)="sort()">{{column.name}}</span>
             </ng-template>
             <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-              <button type="button" class="btn-primary" (click)="CreateRandomServiceIssue(row)">
+              <button type="button" class="btn-primary" (click)="CreateRandomServiceIssue(row)" [disabled]="row.OrderServiceReasonStatus != 'None'">
                 Create Issue
               </button>
             </ng-template>

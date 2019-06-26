@@ -12,117 +12,132 @@ import { DatePipe } from '@angular/common';
 
 
 @Component({
-  selector: 'services-dashboard',
-  templateUrl: './services-dashboard.component.html',
-  styleUrls: ['./services-dashboard.component.css']
+    selector: 'services-dashboard',
+    templateUrl: './services-dashboard.component.html',
+    styleUrls: ['./services-dashboard.component.css']
 })
 export class ServicesDashboardComponent {
 
-  public loading: boolean = false;
+    public loading: boolean = false;
 
-  public AllWarranty: boolean = true;
-
-
-  public rows = [];
-  public allrows = [];
+    public AllWarranty: boolean = true;
 
 
-  private completeStatus: string = 'Order Fulfilled';
-  public ShowRandomServiceIssue: boolean = false;
-
-  constructor(http: Http, @Inject('BASE_URL') baseUrl: string, private web3Service: Web3Service, private OSService: OrderSystemService, private toastr: ToastrService) {
-    console.log(this.web3Service.web3);
-  }
-
-  public SearchOrders() {
-    this.OSService.getAllWarrantyOrders();
-  }
-
-  public FilterOrders() {
-
-    if (this.AllWarranty)
-      this.rows = [...this.allrows];
-    else
-      this.rows = [...this.allrows.filter(row => SharedFunctions.GetServiceReasonNumber(row.OrderServiceReasonStatus) > 0)];
-
-  }
-
-  ngOnInit() {
-    console.log(`services dashboard initiated.`);
-    this.loading = true;
-    this.OSService.manuInitialLoadComplete = false;
-
-    this.OSService.manuSubject.asObservable().subscribe({
-      next: result => {
-        console.log(result);
-        console.log(`services updates`);
-        this.rows = [...this.rows]
-        //search in rows if oreader is already there.
-
-        let existingOrders = [];
+    public rows = [];
+    public allrows = [];
 
 
-        this.rows.map((row) => {
-          if (result.OrderID === row.OrderID) {
-            //order already in thr row.. just update it.
+    private completeStatus: string = 'Order Fulfilled';
+    public ShowRandomServiceIssue: boolean = false;
 
-            if (this.OSService.manuInitialLoadComplete && row.Status !== result.OrderStatus)
-              this.toastr.warning(`${row.OrderName} has been changed`, "Orders updated");
+    constructor(private web3Service: Web3Service, private OSService: OrderSystemService, private toastr: ToastrService) {
+        console.log(this.web3Service.web3);
+    }
 
-            row.Status = result.OrderStatus;
-            //row.ChangeStatusText = this.GetChangeStatusText(SharedFunctions.GetOrderStatusString((SharedFunctions.GetOrderStatusNumber(row.Status))));
-            existingOrders.push(row.OrderID);
-          }
+    public SearchOrders() {
+        this.OSService.getAllWarrantyOrders();
+    }
+
+    public FilterOrders() {
+
+        if (this.AllWarranty)
+            this.rows = [...this.allrows.filter(row => SharedFunctions.GetOrderStatusNumber(row.OrderStatus) > 3)];
+        else
+            this.rows = [...this.allrows.filter(row => SharedFunctions.GetServiceReasonNumber(row.OrderServiceReasonStatus) > 0)];
+
+    }
+
+    ngOnInit() {
+        console.log(`services dashboard initiated.`);
+        this.loading = true;
+        this.OSService.orderNotifyLoadComplete = false;
+
+
+        this.OSService.orderNotify.asObservable().subscribe({
+            next: result => {
+                console.log(result);
+                console.log(`services updates`);
+                this.allrows = [...this.allrows];
+
+                let existingOrders = [];
+
+                this.allrows.map((row) => {
+                    if (result.OrderID === row.OrderID) {
+                        //order already in thr row.. just update it.
+
+                        if (this.OSService.orderNotifyLoadComplete && row.Status !== result.OrderStatus)
+                            this.toastr.warning(`${row.OrderName} has been changed`, "Orders updated");
+
+                        row.Status = result.OrderStatus;
+                        //row.ChangeStatusText = this.GetChangeStatusText(SharedFunctions.GetOrderStatusString((SharedFunctions.GetOrderStatusNumber(row.Status))));
+                        existingOrders.push(row.OrderID);
+                    }
+                });
+
+                //OrderName
+                //OrderID
+                //OrderSubmitter
+                //CustomerInfo.Email
+                //OrderServiceReasonStatus
+                //OrderServiceDate
+
+                if (existingOrders.indexOf(result.OrderID) === -1 && SharedFunctions.GetOrderStatusNumber(result.OrderStatus) > 3) {
+                    this.allrows.push({
+                        OrderName: result.OrderName,
+                        OrderID: result.OrderID,
+                        OrderSubmitter: result.OrderSubmitter,
+                        CustomerInfo: result.CustomerInfo,
+                        OrderServiceReasonStatus: result.OrderServiceReasonStatus,
+                        OrderServiceDate: result.OrderServiceDate,
+                        OrderStatus: result.OrderStatus
+                    });
+
+                    if (this.OSService.orderNotifyLoadComplete)
+                        this.toastr.success(`${result.OrderName} has been added`, "Orders Added");
+                };
+
+                console.log(this.allrows.length);
+
+                this.loading = false;
+                this.allrows = [...this.allrows];
+
+            }
         });
+        console.log(`Length is  : ${this.allrows.length}`);
+        this.OSService.getAllWarrantyOrders().then((value) => {
+            this.FilterOrders();
+            this.loading = false;
+        });;
+    }
 
-        if (existingOrders.indexOf(result.OrderID) === -1) {
-          this.rows.push(result);
+    public ToggleCreateRandomServiceIssue() {
 
-          if (this.OSService.transInitialLoadComplete)
-            this.toastr.success(`${result.OrderName} has been added`, "Orders Added");
-        };
+        this.ShowRandomServiceIssue = !this.ShowRandomServiceIssue;
 
-        console.log(this.rows.length);
-        this.loading = false;
-        this.rows = [...this.rows];
-        this.allrows = this.rows;
+    }
 
-      }
-    });
-    console.log(`Length is  : ${this.rows.length}`);
-    this.OSService.getAllWarrantyOrders();
-  }
+    public CreateRandomServiceIssue(row) {
 
-  public ToggleCreateRandomServiceIssue() {
+        this.loading = true;
 
-    this.ShowRandomServiceIssue = !this.ShowRandomServiceIssue;
+        let newstatus = SharedFunctions.GetServiceReasonNumber(row.OrderServiceReasonStatus) + RandomNums.getRandomInt(1, 5);
 
-  }
+        this.OSService.updateServiceStatus(row.OrderID, newstatus, {
+            from: this.web3Service.web3.eth.accounts[0]
+        })
+            .on('transactionHash', (transactionHash) => {
+                this.toastr.info(`Service Status Update Requested`);
+            })
+            .on('receipt', (receipt) => {
+                console.log(`Service Status Changed`);
+                this.loading = false;
+            });
 
-  public CreateRandomServiceIssue(row) {
+    }
 
-    this.loading = true;
+    public RunSpinner() {
+        this.loading = true;
 
-    let ethJson = {};
-    ethJson['orderid'] = row.OrderID;
-    ethJson['status'] = SharedFunctions.GetServiceReasonNumber(row.OrderServiceReasonStatus) + RandomNums.getRandomInt(1, 5);
-
-    this.OSService.updateServiceStatus(ethJson['orderid'], ethJson['status'], {
-      from: this.web3Service.web3.eth.accounts[0]
-    })
-      .on('transactionHash', (transactionHash) => {
-        this.toastr.info(`Service Status Update Requested`);
-      })
-      .on('receipt', (receipt) => {
-        console.log(`Service Status Changed`);
-        this.loading = false;
-      });
-
-  }
-
-  public RunSpinner() {
-    this.loading = true;
-
-    setTimeout(() => { this.loading = false; }, 3000);
-  }
+        setTimeout(() => { this.loading = false; }, 3000);
+    }
 }

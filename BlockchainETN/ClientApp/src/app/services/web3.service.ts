@@ -27,24 +27,12 @@ export class Web3Service {
 
     if (!this.web3) {
       console.log(`Redefining Web3`);
-      // if(!window.ethereum){
-      //   this.web3 = new Web3(window.ethereum);
-      //   console.log(`In first condition`);
-      //   // try{
-      //   //   //Ask for permission for using metamask.
-      //   //   this.web3 = new Web3(new Web3.providers.WebsocketProvider('ws://127.0.0.1:8545'));
-      //   //   //await window.ethereum.enable();
 
-      //   // }catch(err){
-      //   //   console.log(err);
-      //   // }
-      // }else 
       if (typeof window.web3 !== 'undefined') {
         console.log(`In second condition`);
         window.ethereum.enable();
 
         // Use Mist/MetaMask's provider
-        // this.web3 = new Web3(new Web3.providers.WebsocketProvider('ws://127.0.0.1:8545'));
         this.web3 = new Web3(window.web3.currentProvider);
       } else {
         console.log('No web3? You should consider trying MetaMask!');

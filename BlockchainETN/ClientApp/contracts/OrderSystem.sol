@@ -94,7 +94,7 @@ contract OrderSystem {
 
         Orders[orderid] = Order(orderid, existingOrder.SubmissionDate, existingOrder.EstimatedReceptionDate,
                                     existingOrder.OrderStatus, existingOrder.OrderInfo, existingOrder.submitter,
-                                    existingOrder.HasWarranty, now, ServiceReasonEnum(existingOrder.ServiceStatus));
+                                    existingOrder.HasWarranty, now, ServiceReasonEnum(newstatus));
 
         return true;
     }

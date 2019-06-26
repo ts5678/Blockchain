@@ -16,44 +16,47 @@ import { InfoShareService } from './infoshare.service';
 import { ManufacturingDashboardComponent } from './manufacturing-dashboard/manufacturing-dashboard.component';
 import { Web3Service } from './services/web3.service';
 import { OrderSystemService } from './services/order-system.service';
-import {ToastrModule, ToastrService} from 'ngx-toastr';
+import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServicesDashboardComponent } from './services-dashboard/services-dashboard.component';
+import { AnalyticsDashboardComponent } from './analytics-dashboard/analytics-dashboard.component';
 
 
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    NavMenuComponent,
-    HomeComponent,
-    ConfigureItemComponent,
-    PlanningDashboardComponent,
-    ManufacturingDashboardComponent,
-    ServicesDashboardComponent
-  ],
-  imports: [
-    BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
-    HttpClientModule,
-    FormsModule,
-    HttpModule,
-    BrowserAnimationsModule,
-    ToastrModule.forRoot({
-      timeOut: 5000,
-      preventDuplicates: true
-    }),
-    NgxLoadingModule.forRoot({}),
-    NgxDatatableModule,
-    NgxMaskModule.forRoot(),
-    RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'configure-item', component: ConfigureItemComponent },
-      { path: 'planning-dashboard', component: PlanningDashboardComponent },
-      { path: 'manufacturing-dashboard', component: ManufacturingDashboardComponent },
-      { path: 'services-dashboard', component: ServicesDashboardComponent },
-    ])
-  ],
-  providers: [InfoShareService,Web3Service,OrderSystemService, ToastrService],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        NavMenuComponent,
+        HomeComponent,
+        ConfigureItemComponent,
+        PlanningDashboardComponent,
+        ManufacturingDashboardComponent,
+        ServicesDashboardComponent,
+        AnalyticsDashboardComponent
+    ],
+    imports: [
+        BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
+        HttpClientModule,
+        FormsModule,
+        HttpModule,
+        BrowserAnimationsModule,
+        ToastrModule.forRoot({
+            timeOut: 5000,
+            preventDuplicates: true
+        }),
+        NgxLoadingModule.forRoot({}),
+        NgxDatatableModule,
+        NgxMaskModule.forRoot(),
+        RouterModule.forRoot([
+            { path: '', component: HomeComponent, pathMatch: 'full' },
+            { path: 'configure-item', component: ConfigureItemComponent },
+            { path: 'planning-dashboard', component: PlanningDashboardComponent },
+            { path: 'manufacturing-dashboard', component: ManufacturingDashboardComponent },
+            { path: 'services-dashboard', component: ServicesDashboardComponent },
+            { path: 'analytics-dashboard', component: AnalyticsDashboardComponent },
+        ])
+    ],
+    providers: [InfoShareService, Web3Service, OrderSystemService, ToastrService],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }
