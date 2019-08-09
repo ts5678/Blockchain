@@ -17,10 +17,11 @@ import { ManufacturingDashboardComponent } from './manufacturing-dashboard/manuf
 import { Web3Service } from './services/web3.service';
 import { OrderSystemService } from './services/order-system.service';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
+import { HighchartsChartComponent } from 'highcharts-angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServicesDashboardComponent } from './services-dashboard/services-dashboard.component';
 import { AnalyticsDashboardComponent } from './analytics-dashboard/analytics-dashboard.component';
-
+import {MatGridListModule} from '@angular/material';
 
 
 @NgModule({
@@ -29,6 +30,7 @@ import { AnalyticsDashboardComponent } from './analytics-dashboard/analytics-das
         NavMenuComponent,
         HomeComponent,
         ConfigureItemComponent,
+        HighchartsChartComponent,
         PlanningDashboardComponent,
         ManufacturingDashboardComponent,
         ServicesDashboardComponent,
@@ -46,6 +48,7 @@ import { AnalyticsDashboardComponent } from './analytics-dashboard/analytics-das
         }),
         NgxLoadingModule.forRoot({}),
         NgxDatatableModule,
+        MatGridListModule,
         NgxMaskModule.forRoot(),
         RouterModule.forRoot([
             { path: '', component: HomeComponent, pathMatch: 'full' },

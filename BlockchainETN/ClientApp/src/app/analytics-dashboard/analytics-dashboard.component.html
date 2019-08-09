@@ -3,11 +3,11 @@
 <div class='container-fluid'>
   <div class='row border card'>
     <div class="card-header">
-      Manufacturing Dashboard
-      <!--<button class="btn btn-primary" (click)="RunSpinner()">Click to spin</button>-->
+      Analytics Dashboard
+      <!--button class="btn btn-primary" (click)="RunSpinner()">Click to spin</button>-->
     </div>
-    <div class="card-body">
-      <div class="col-sm-12">
+    <!--div class="card-body">
+      <div class="col-sm-16">
         <label for="timespan">Time Range: </label>
         <select [(ngModel)]="SelectedTimespan" class="mb-1 mt-2" name="timespan">
           <option *ngFor="let c of Timespans" [ngValue]="c">{{c.name}}</option>
@@ -17,73 +17,123 @@
       <div class="col-sm-12">
       </div>
     </div>
-  </div>
+  </div>-->
   <div class='row border card'>
     <div class="card-header">
-      Details
-    </div>
-    <div class="card-body">
-      <div class="col-sm-12">
-        <ngx-datatable class="bootstrap"
-                       [rows]="rows"
-                       [columnMode]="'force'"
-                       [headerHeight]="50"
-                       [footerHeight]="50"
-                       [rowHeight]="50"
-                       [limit]="10">
-          <ngx-datatable-column name="Order Created">
-            <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
-              <span (click)="sortFn()">{{column.name}}</span>
-            </ng-template>
-            <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-              {{row['SubmissionDate']}}
-            </ng-template>
-          </ngx-datatable-column>
-          <ngx-datatable-column name="Order ID">
-            <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
-              <span (click)="sort()">{{column.name}}</span>
-            </ng-template>
-            <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-              {{row['OrderID']}}
-            </ng-template>
-          </ngx-datatable-column>
-          <ngx-datatable-column name="Order Name" maxWidth="130">
-            <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
-              <span (click)="sort()">{{column.name}}</span>
-            </ng-template>
-            <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-              {{row['OrderName']}}
-            </ng-template>
-          </ngx-datatable-column>
-          <ngx-datatable-column name="Status" maxWidth="100">
-            <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
-              <span (click)="sort()">{{column.name}}</span>
-            </ng-template>
-            <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-              {{row['Status']}}
-            </ng-template>
-          </ngx-datatable-column>
-          <ngx-datatable-column name="Customer Name" minWidth="350">
-            <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
-              <span (click)="sort()">{{column.name}}</span>
-            </ng-template>
-            <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-              {{row['CustomerName']}}
-            </ng-template>
-          </ngx-datatable-column>
-          <ngx-datatable-column name="Action">
-            <ng-template let-column="column" let-sort="sortFn" ngx-datatable-header-template>
-              <span>{{column.name}}</span>
-            </ng-template>
-            <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-              <button type="button" [ngClass]="{true : 'btn-success', false: 'btn-primary'} [row['ChangeStatusText'] === completeStatus]"
-                      (click)="SetStatus(row)" [disabled]="row['ChangeStatusText'] === completeStatus">{{row['ChangeStatusText']}}</button>
-            </ng-template>
-          </ngx-datatable-column>
-        </ngx-datatable>
-      </div>
+      Statistics
     </div>
   </div>
+</div>
+    <div class="card-body">
+      <div class="col-sm-16">
+    <mat-grid-list cols="3" rowHeight="4:4">
+    <mat-grid-tile 
+    style="border:6px solid navy;">
+    <body>
+    <h2 style="text-align:center"><strong>Total Orders</strong></h2>
+    <br>
+    <br>
+    <h1 style="text-align:center">{{ getOrderNumber() }}</h1>
+    </body>
+    </mat-grid-tile>
+    <mat-grid-tile
+    style="border:6px solid navy;">
+    <body>
+        <h2 style="text-align:center"><strong>Total Transactions</strong></h2>
+        <br>
+        <br>
+        <h1 style="text-align:center">{{ getTransactionNumber() }}</h1>
+    </body>
+    </mat-grid-tile>
+    <mat-grid-tile
+    style="border:6px solid navy;"
+    [rowspan]=2>
+      <body>
+        <h2 style="text-align:center"><strong>Billing Addresses in USA</strong></h2>
+        <br>
+        <br>
+        <h5 style="text-align:center" [innerHTML]="getRegionStateDataBilling()"></h5>
+      </body>
+    </mat-grid-tile>
+    <mat-grid-tile
+    style="border:6px solid navy;">
+      <body>
+          <h2 style="text-align:center"><strong>Average Transactions Per Order</strong></h2>
+          <br>
+          <br>
+          <h1 style="text-align:center">{{ getAverageTransactionsPerOrder() }}</h1>
+      </body>
+    </mat-grid-tile>
+    <mat-grid-tile
+    style="border:6px solid navy;">
+      <body>
+          <h2 style="text-align:center"><strong>Total Price of Orders</strong></h2>
+          <br>
+          <br>
+          <h1 style="text-align:center">${{ getOrderPrice() }}</h1>
+      </body>
+    </mat-grid-tile>
+    <mat-grid-tile
+    style="border:6px solid navy;">
+      <body>
+          <h2 style="text-align:center"><strong>Total Non-Complete Orders</strong></h2>
+          <br>
+          <br>
+          <h1 style="text-align:center">{{ getNonCompleteOrders() }}</h1>
+      </body>
+    </mat-grid-tile>
+    <mat-grid-tile
+    style="border:6px solid navy;">
+      <body>
+          <h2 style="text-align:center"><strong>Percentage of Non Complete Orders</strong></h2>
+          <br>
+          <br>
+          <h1 style="text-align:center">{{ getPercentageNonCompleteOrders() }}%</h1>
+      </body>
+    </mat-grid-tile>
+    <mat-grid-tile
+    style="border:6px solid navy;"
+    [rowspan]=2>
+      <body>
+        <h2 style="text-align:center"><strong>Mailing Addresses in USA</strong></h2>
+        <br>
+        <br>
+        <h5 style="text-align:center" [innerHTML]="getRegionStateDataMailing()"></h5>
+      </body>
+    </mat-grid-tile>
+    <mat-grid-tile
+    style="border:6px solid navy;">
+      <body>
+          <h2 style="text-align:center"><strong>Number of Warrantied Orders</strong></h2>
+          <br>
+          <br>
+          <h1 style="text-align:center">{{ getWarrantyOrders() }}</h1>
+      </body>
+    </mat-grid-tile>
+    <!--mat-grid-tile
+    style="border:6px solid navy;">
+      <body>
+        <h2 style="text-align:center"><strong>Percentage of Warranty Orders</strong></h2>
+        <br>
+        <br>
+        <h1 style="text-align:center">{{ getPercentageWarrantyOrders() }}%</h1>
+      </body>
+    </mat-grid-tile>-->
+    <mat-grid-tile
+    style="border:6px solid navy;">
+      <body>
+          <h2 style="text-align:center"><strong>Total Price of Warranty Orders</strong></h2>
+          <br>
+          <br>
+          <h1 style="text-align:center">${{ getWarrantyPrice() }}</h1>
+      </body>
+    </mat-grid-tile>
+    </mat-grid-list>
+    </div>
+  </div>
+</div>
+      
+    
   <!-- Modal -->
   <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -104,4 +154,4 @@
       </div>
     </div>
   </div>
-</div>
+

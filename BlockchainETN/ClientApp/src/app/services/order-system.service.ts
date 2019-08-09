@@ -8,6 +8,8 @@ import { fromPromise } from "rxjs/observable/fromPromise";
 import { of } from "rxjs/observable/of";
 import { PassThrough } from "stream";
 import { Orders } from "../model/Orders";
+import { Dictionary, KeyValuePair } from "../dictionary";
+import { keyframes } from '@angular/core/src/animation/dsl';
 const OrderSystem = require("../../../build/contracts/OrderSystem.json");
 const InputDataDecoder = require('ethereum-input-data-decoder');
 
@@ -39,6 +41,16 @@ export class OrderSystemService {
     //OrderStatus = ["OrderReceived", "BeingBuilt", "PreparedForShipping", "InTransit", "ShippingComplete", 'ServiceRequested']
 
     OSContractAddr: string;
+
+    private static billingAddresses = new Dictionary<string, number>();
+    private static mailingAddresses = new Dictionary<string, number>();
+
+    private static orders = 0;
+    private static transactions = 0;
+    private static nonCompleteOrders = 0;
+    private static warrantyOrders = 0;
+    private static warrantyPrice = 0;
+    private static orderPrice = 0;
 
     handleCreateEvent = (rawData, eventData, receipt) => {
         let order = new Orders();
@@ -202,7 +214,7 @@ export class OrderSystemService {
                 } catch (err) {
                     console.error()
                 }
-                console.log(`OS Contract is now set with addres`);
+                console.log(`OS Contract is now set with address`);
                 console.log(this.OSContract);
             });
         }
@@ -266,10 +278,13 @@ export class OrderSystemService {
         const decoder = new InputDataDecoder(OrderSystem.abi);
         
         let blockCount = await this.web3Service.web3.eth.getBlockNumber();
+        let totalTrxCount = 0;
         for (let blockIdx = 1; blockIdx <= blockCount; blockIdx++) {
             let trxCount = await this.web3Service.web3.eth.getBlockTransactionCount(
                 blockIdx
             );
+
+            totalTrxCount = totalTrxCount + trxCount;
 
             for (let trxIdx = 0; trxIdx < trxCount; trxIdx++) {
                 try {
@@ -293,6 +308,11 @@ export class OrderSystemService {
                 }
             }
         }
+        OrderSystemService.transactions = totalTrxCount;
+    }
+
+    getTransactionNumber() {
+        return OrderSystemService.transactions;
     }
 
     async getAllOrders() {
@@ -306,14 +326,47 @@ export class OrderSystemService {
 
         let order = new Orders();
         let orderNums = resultObj[0].length;
+        OrderSystemService.orders = orderNums;
+        let nonCompletes = 0;
+        let totalOrderPrice = 0;
+        let orderState = '';
+        let mailingState = '';
+        let tempBillingAddresses = new Dictionary<string, number>();
+        let tempMailingAddresses = new Dictionary<string, number>();
 
         for (let counter = 0; counter < orderNums; counter++) {
             order.OrderID = resultObj[0][counter];
             order.OrderDate = new Date(parseInt(resultObj[1][counter]) * 1000);
             order.OrderEstDate = new Date(parseInt(resultObj[2][counter]) * 1000);
             order.OrderStatus = SharedFunctions.GetOrderStatusString(resultObj[3][counter]);
+            console.log("Event Status: " + order.OrderStatus);
+            console.log("This State: " + JSON.parse(resultObj[4][counter])['billingaddress']['stateprovince']);
+            if(order.OrderStatus != "Delivered") 
+                nonCompletes++;
             let orderInfo = resultObj[4][counter];
+            totalOrderPrice = totalOrderPrice + JSON.parse(orderInfo)["price"];
             order.OrderName = JSON.parse(orderInfo)["ordername"];
+            orderState = JSON.parse(orderInfo)['billingaddress']['stateprovince'];
+            mailingState = JSON.parse(orderInfo)['shippingaddress']['stateprovince'];
+            
+            // Add the billing address and mailing address of order to a map which will
+            // keep track of the number of orders from that state.
+            if(tempBillingAddresses.containsKey(orderState)) {
+                let currentStateQuantity = tempBillingAddresses.tryGetValue(orderState);
+                tempBillingAddresses.remove(x => x.key == orderState);
+                tempBillingAddresses.add(orderState, currentStateQuantity + 1);
+            }
+            else {
+                tempBillingAddresses.add(orderState, 1);
+            }
+            if(tempMailingAddresses.containsKey(mailingState)) {
+                let currentStateQuantity = tempMailingAddresses.tryGetValue(mailingState);
+                tempMailingAddresses.remove(x => x.key == mailingState);
+                tempMailingAddresses.add(mailingState, currentStateQuantity + 1);
+            }
+            else {
+                tempMailingAddresses.add(mailingState, 1);
+            }
             order.OrderInfo = order.OrderInfo;
             //Wrong Way to upload.
             order.OrderSubmitter = resultObj[5][counter];
@@ -321,7 +374,35 @@ export class OrderSystemService {
             this.orderNotify.next(order);
         }
 
+        OrderSystemService.nonCompleteOrders = nonCompletes;
+        OrderSystemService.orderPrice = totalOrderPrice;
+        OrderSystemService.billingAddresses = tempBillingAddresses;
+        OrderSystemService.mailingAddresses = tempMailingAddresses;
+        for(let i = 0; i < OrderSystemService.billingAddresses.length; i++) {
+            console.log("State Value: " + OrderSystemService.billingAddresses.elementAt(i).key);
+        }
+        
         this.orderNotifyLoadComplete = true;
+    }
+
+    getNonCompleteNumber() {
+        return OrderSystemService.nonCompleteOrders;
+    }
+
+    getOrderNumber() {
+        return OrderSystemService.orders;
+    }
+
+    getOrderPrice() {
+        return OrderSystemService.orderPrice;
+    }
+
+    getBillingAddresses() {
+        return OrderSystemService.billingAddresses;
+    }
+
+    getMailingAddresses() {
+        return OrderSystemService.mailingAddresses;
     }
 
     async getAllWarrantyOrders() {
@@ -335,10 +416,13 @@ export class OrderSystemService {
 
         let order = new Orders();
         let orderNums = resultObj[0].length;
+        let totalWarrantyOrders = 0;
+        let totalWarrantyPrice = 0;
 
         for (let counter = 0; counter < orderNums; counter++) {
             let ordid = resultObj[0][counter];
             if (ordid.length > 0) {
+                totalWarrantyOrders++;
                 order.OrderID = resultObj[0][counter];
                 order.OrderDate = new Date(parseInt(resultObj[1][counter]) * 1000);
                 let servicedate = resultObj[2][counter];
@@ -349,6 +433,7 @@ export class OrderSystemService {
                 let parsedJson = JSON.parse(order.OrderInfo);
                 order.OrderName = parsedJson["ordername"];
                 order.CustomerInfo = CustomerInfo.fromJson(parsedJson['customer']);
+                totalWarrantyPrice = totalWarrantyPrice + parsedJson["price"];
 
                 order.OrderSubmitter = resultObj[5][counter];
                 order.OrderServiceReasonStatus = SharedFunctions.GetServiceReasonString(resultObj[6][counter]);
@@ -357,7 +442,18 @@ export class OrderSystemService {
             }
         }
 
+        OrderSystemService.warrantyOrders = totalWarrantyOrders;
+        OrderSystemService.warrantyPrice = totalWarrantyPrice;
+
         this.orderNotifyLoadComplete = true;
+    }
+
+    getWarrantyOrderNumber() {
+        return OrderSystemService.warrantyOrders;
+    }
+
+    getWarrantyPrice() {
+        return OrderSystemService.warrantyPrice;
     }
 
 }
